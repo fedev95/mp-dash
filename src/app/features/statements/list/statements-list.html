@@ -1,0 +1,53 @@
+<div class="h-full flex flex-col gap-4">
+  <div>
+    <h1 class="text-2xl font-semibold text-surface-900 dark:text-surface-0">Resúmenes cargados</h1>
+    <p class="text-surface-500 text-sm">Historial de resúmenes mensuales subidos</p>
+  </div>
+
+  @if (errorMessage()) {
+    <p-message severity="error" [text]="errorMessage()!" styleClass="w-full" />
+  }
+
+  <div class="flex-1 min-h-0">
+    <p-table
+      [value]="statements()"
+      [loading]="loading()"
+      scrollable
+      scrollHeight="flex"
+      sortField="periodStart"
+      [sortOrder]="-1"
+      styleClass="h-full"
+      [tableStyle]="{ 'min-width': '50rem' }"
+    >
+      <ng-template pTemplate="header">
+        <tr>
+          <th pSortableColumn="periodStart">Período <p-sortIcon field="periodStart" /></th>
+          <th pSortableColumn="summary.initialBalance">
+            Saldo inicial <p-sortIcon field="summary.initialBalance" />
+          </th>
+          <th pSortableColumn="summary.credits">Créditos <p-sortIcon field="summary.credits" /></th>
+          <th pSortableColumn="summary.debits">Débitos <p-sortIcon field="summary.debits" /></th>
+          <th pSortableColumn="summary.finalBalance">
+            Saldo final <p-sortIcon field="summary.finalBalance" />
+          </th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-record>
+        <tr>
+          <td>{{ formatPeriod(record) }}</td>
+          <td>{{ record.summary.initialBalance | arsCurrency }}</td>
+          <td>{{ record.summary.credits | arsCurrency }}</td>
+          <td>{{ record.summary.debits | arsCurrency }}</td>
+          <td>{{ record.summary.finalBalance | arsCurrency }}</td>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="5" class="text-center text-surface-400 py-10">
+            Todavía no subiste ningún resumen.
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+</div>

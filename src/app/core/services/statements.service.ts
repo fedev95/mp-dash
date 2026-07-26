@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { Auth } from '@angular/fire/auth';
-import { Firestore, addDoc, collection } from '@angular/fire/firestore/lite';
-import { AccountStatement } from '../models/account-statement.model';
+import { Firestore, addDoc, collection, getDocs } from '@angular/fire/firestore/lite';
+import { AccountStatement, StatementRecord } from '../models/account-statement.model';
 
 @Injectable({ providedIn: 'root' })
 export class StatementsService {
@@ -25,5 +25,20 @@ export class StatementsService {
       transactions: statement.transactions,
     });
     return docRef.id;
+  }
+
+  /** Lists every statement previously uploaded by the current user. */
+  async getStatements(): Promise<StatementRecord[]> {
+    const user = this.auth.currentUser;
+    if (!user) {
+      throw new Error('No hay un usuario autenticado.');
+    }
+
+    const statementsRef = collection(this.firestore, 'users', user.uid, 'statements');
+    const snapshot = await getDocs(statementsRef);
+    return snapshot.docs.map((d) => {
+      const data = d.data() as Omit<StatementRecord, 'id'>;
+      return { id: d.id, ...data };
+    });
   }
 }

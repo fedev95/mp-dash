@@ -27,6 +27,11 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./features/documents/upload/upload').then((m) => m.Upload),
       },
+      {
+        path: 'statements',
+        loadComponent: () =>
+          import('./features/statements/list/statements-list').then((m) => m.StatementsList),
+      },
     ],
   },
   { path: '**', redirectTo: '' },
