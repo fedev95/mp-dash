@@ -22,6 +22,11 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./features/layout/dashboard/dashboard').then((m) => m.Dashboard),
       },
+      {
+        path: 'documents',
+        loadComponent: () =>
+          import('./features/documents/upload/upload').then((m) => m.Upload),
+      },
     ],
   },
   { path: '**', redirectTo: '' },

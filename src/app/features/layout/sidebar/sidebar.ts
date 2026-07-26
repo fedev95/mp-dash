@@ -7,5 +7,8 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
   templateUrl: './sidebar.html',
 })
 export class Sidebar {
-  readonly links = [{ label: 'Dashboard', icon: 'pi pi-home', path: '/' }];
+  readonly links = [
+    { label: 'Dashboard', icon: 'pi pi-home', path: '/' },
+    { label: 'Cargar resúmenes', icon: 'pi pi-upload', path: '/documents' },
+  ];
 }
