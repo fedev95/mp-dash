@@ -1,7 +1,9 @@
 <div class="flex flex-col gap-6 max-w-3xl">
   <div>
     <h1 class="text-2xl font-semibold text-surface-900 dark:text-surface-0">Cargar resúmenes</h1>
-    <p class="text-surface-500 text-sm">Subí tus resúmenes mensuales de cuenta en formato .csv</p>
+    <p class="text-surface-500 dark:text-surface-400 text-sm">
+      Subí tus resúmenes mensuales de cuenta en formato .csv
+    </p>
   </div>
 
   <p-fileupload
@@ -18,7 +20,7 @@
     (uploadHandler)="onConfirmUpload($event)"
   >
     <ng-template pTemplate="empty">
-      <div class="flex flex-col items-center justify-center gap-2 py-10 text-surface-400">
+      <div class="flex flex-col items-center justify-center gap-2 py-10 text-surface-400 dark:text-surface-500">
         <i class="pi pi-cloud-upload text-4xl"></i>
         <span>Arrastrá tus archivos .csv acá</span>
       </div>

@@ -2,7 +2,7 @@
   <div class="w-full max-w-sm bg-white dark:bg-surface-900 rounded-xl shadow-md p-8 flex flex-col gap-4">
     <div class="text-center mb-2">
       <h1 class="text-2xl font-semibold text-surface-900 dark:text-surface-0">Iniciar sesión</h1>
-      <p class="text-surface-500 text-sm">Ingresá a tu dashboard</p>
+      <p class="text-surface-500 dark:text-surface-400 text-sm">Ingresá a tu dashboard</p>
     </div>
 
     @if (errorMessage()) {
@@ -31,7 +31,7 @@
       <p-button type="submit" label="Entrar" [loading]="loading()" [disabled]="loading()" styleClass="w-full" />
     </form>
 
-    <div class="flex items-center gap-2 text-surface-400 text-xs">
+    <div class="flex items-center gap-2 text-surface-400 dark:text-surface-500 text-xs">
       <div class="flex-1 h-px bg-surface-200 dark:bg-surface-700"></div>
       o
       <div class="flex-1 h-px bg-surface-200 dark:bg-surface-700"></div>
@@ -48,7 +48,7 @@
       (onClick)="loginWithGoogle()"
     />
 
-    <p class="text-center text-sm text-surface-500">
+    <p class="text-center text-sm text-surface-500 dark:text-surface-400">
       ¿No tenés cuenta?
       <a routerLink="/register" class="text-primary-500 font-medium hover:underline">Registrate</a>
     </p>
