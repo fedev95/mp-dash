@@ -1,5 +1,5 @@
 import { Routes } from '@angular/router';
-import { publicOnlyGuard } from './core/guards/auth.guard';
+import { authGuard, publicOnlyGuard } from './core/guards/auth.guard';
 
 export const routes: Routes = [
   {
@@ -12,5 +12,17 @@ export const routes: Routes = [
     canActivate: [publicOnlyGuard],
     loadComponent: () => import('./features/auth/register/register').then((m) => m.Register),
   },
-  { path: '**', redirectTo: 'login' },
+  {
+    path: '',
+    canActivate: [authGuard],
+    loadComponent: () => import('./features/layout/layout').then((m) => m.Layout),
+    children: [
+      {
+        path: '',
+        loadComponent: () =>
+          import('./features/layout/dashboard/dashboard').then((m) => m.Dashboard),
+      },
+    ],
+  },
+  { path: '**', redirectTo: '' },
 ];

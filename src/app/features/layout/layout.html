@@ -1,0 +1,13 @@
+<div class="h-screen flex flex-col overflow-hidden bg-surface-50 dark:bg-surface-950">
+  <app-navbar class="w-full h-16 shrink-0" />
+
+  <div class="flex flex-1 overflow-hidden">
+    <app-sidebar class="w-64 h-full overflow-y-auto shrink-0" />
+
+    <main class="flex-1 h-full overflow-y-auto p-6">
+      <router-outlet />
+    </main>
+  </div>
+
+  <app-footer class="w-full h-10 shrink-0" />
+</div>
