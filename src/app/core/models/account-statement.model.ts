@@ -30,3 +30,8 @@ export interface StatementRecord {
   periodEnd: string | null;
   summary: StatementSummary;
 }
+
+/** A single statement record with its full list of transactions. */
+export interface StatementDetail extends StatementRecord {
+  transactions: StatementTransaction[];
+}

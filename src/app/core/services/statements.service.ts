@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { Auth } from '@angular/fire/auth';
-import { Firestore, addDoc, collection, getDocs } from '@angular/fire/firestore/lite';
-import { AccountStatement, StatementRecord } from '../models/account-statement.model';
+import { Firestore, addDoc, collection, doc, getDoc, getDocs } from '@angular/fire/firestore/lite';
+import { AccountStatement, StatementDetail, StatementRecord } from '../models/account-statement.model';
 
 @Injectable({ providedIn: 'root' })
 export class StatementsService {
@@ -40,5 +40,22 @@ export class StatementsService {
       const data = d.data() as Omit<StatementRecord, 'id'>;
       return { id: d.id, ...data };
     });
+  }
+
+  /** Fetches a single statement, including its full transaction list, by Firestore doc ID. */
+  async getStatementById(id: string): Promise<StatementDetail> {
+    const user = this.auth.currentUser;
+    if (!user) {
+      throw new Error('No hay un usuario autenticado.');
+    }
+
+    const docRef = doc(this.firestore, 'users', user.uid, 'statements', id);
+    const snapshot = await getDoc(docRef);
+    if (!snapshot.exists()) {
+      throw new Error('No se encontró el resumen solicitado.');
+    }
+
+    const data = snapshot.data() as Omit<StatementDetail, 'id'>;
+    return { id: snapshot.id, ...data };
   }
 }

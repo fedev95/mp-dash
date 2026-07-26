@@ -35,7 +35,10 @@
         </tr>
       </ng-template>
       <ng-template pTemplate="body" let-record>
-        <tr>
+        <tr
+          class="cursor-pointer hover:bg-surface-50 dark:hover:bg-surface-800"
+          (click)="openStatement(record)"
+        >
           <td>{{ formatPeriod(record) }}</td>
           <td>{{ record.summary.initialBalance | arsCurrency }}</td>
           <td>{{ record.summary.credits | arsCurrency }}</td>

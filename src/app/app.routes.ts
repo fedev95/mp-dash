@@ -32,6 +32,13 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./features/statements/list/statements-list').then((m) => m.StatementsList),
       },
+      {
+        path: 'statements/:id',
+        loadComponent: () =>
+          import('./features/statements/detail/transactions-list').then(
+            (m) => m.TransactionsList,
+          ),
+      },
     ],
   },
   { path: '**', redirectTo: '' },

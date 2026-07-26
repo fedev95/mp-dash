@@ -1,9 +1,11 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
+import { Router } from '@angular/router';
 import { TableModule } from 'primeng/table';
 import { MessageModule } from 'primeng/message';
 import { StatementsService } from '../../../core/services/statements.service';
 import { StatementRecord } from '../../../core/models/account-statement.model';
 import { ArsCurrencyPipe } from '../../../core/pipes/ars-currency.pipe';
+import { formatPeriod } from '../../../core/utils/format-period';
 
 @Component({
   selector: 'app-statements-list',
@@ -12,6 +14,7 @@ import { ArsCurrencyPipe } from '../../../core/pipes/ars-currency.pipe';
 })
 export class StatementsList implements OnInit {
   private readonly statementsService = inject(StatementsService);
+  private readonly router = inject(Router);
 
   readonly statements = signal<StatementRecord[]>([]);
   readonly loading = signal(true);
@@ -33,17 +36,11 @@ export class StatementsList implements OnInit {
     }
   }
 
-  private static readonly monthYearFormatter = new Intl.DateTimeFormat('es-AR', {
-    month: 'long',
-    year: 'numeric',
-  });
-
   formatPeriod(record: StatementRecord): string {
-    if (!record.periodStart) {
-      return '-';
-    }
-    const [year, month] = record.periodStart.split('-').map(Number);
-    const formatted = StatementsList.monthYearFormatter.format(new Date(year, month - 1, 1));
-    return formatted.charAt(0).toUpperCase() + formatted.slice(1);
+    return formatPeriod(record.periodStart);
+  }
+
+  openStatement(record: StatementRecord): void {
+    this.router.navigate(['/statements', record.id]);
   }
 }
