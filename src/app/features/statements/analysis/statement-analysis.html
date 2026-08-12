@@ -87,18 +87,23 @@
       <p class="text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">
         Evolución del saldo
       </p>
-      <div class="h-72">
-        <p-chart type="line" [data]="balanceChartData()" [options]="balanceChartOptions()" />
+      <div class="h-96">
+        <p-chart type="line" [data]="balanceChartData()" [options]="balanceChartOptions()" class="h-full" />
       </div>
     </p-card>
 
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 items-start">
       <p-card>
         <p class="text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">
           Flujo diario (ingresos / egresos)
         </p>
-        <div class="h-72">
-          <p-chart type="bar" [data]="dailyFlowChartData()" [options]="dailyFlowChartOptions()" />
+        <div class="h-96">
+          <p-chart
+            type="bar"
+            [data]="dailyFlowChartData()"
+            [options]="dailyFlowChartOptions()"
+            class="h-full"
+          />
         </div>
       </p-card>
 
@@ -107,11 +112,12 @@
           Egresos por categoría
         </p>
         @if (hasExpenseBreakdown) {
-          <div class="h-72">
+          <div class="h-96">
             <p-chart
               type="doughnut"
               [data]="expenseBreakdownChartData()"
               [options]="expenseBreakdownChartOptions()"
+              class="h-full"
             />
           </div>
         } @else {

@@ -102,14 +102,14 @@
       </div>
     </p-card>
 
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 items-start">
       <p-card>
         <p class="text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">
           Evolución del saldo
         </p>
         @if (hasStatements) {
-          <div class="h-72">
-            <p-chart type="line" [data]="balanceChartData()" [options]="balanceChartOptions()" />
+          <div class="h-96">
+            <p-chart type="line" [data]="balanceChartData()" [options]="balanceChartOptions()" class="h-full" />
           </div>
         } @else {
           <p class="text-surface-400 dark:text-surface-500 text-sm text-center py-10">
@@ -125,11 +125,12 @@
         @if (yearDetailsLoading()) {
           <p class="text-surface-400 dark:text-surface-500 text-sm text-center py-10">Cargando…</p>
         } @else if (hasExpenseBreakdown) {
-          <div class="h-72">
+          <div class="h-96">
             <p-chart
               type="doughnut"
               [data]="expenseBreakdownChartData()"
               [options]="expenseBreakdownChartOptions()"
+              class="h-full"
             />
           </div>
         } @else {
