@@ -1,12 +1,14 @@
 <div class="h-full flex flex-col gap-4">
   <div>
-    <a
-      routerLink="/statements"
-      class="inline-flex items-center gap-1 text-sm text-primary-500 group mb-2"
-    >
-      <i class="pi pi-arrow-left"></i>
-      <span class="group-hover:underline">Volver a resúmenes</span>
-    </a>
+    @if (statement(); as s) {
+      <a
+        [routerLink]="['/statements', s.id]"
+        class="inline-flex items-center gap-1 text-sm text-primary-500 group mb-2"
+      >
+        <i class="pi pi-arrow-left"></i>
+        <span class="group-hover:underline">Volver al análisis</span>
+      </a>
+    }
     <h1 class="text-2xl font-semibold text-surface-900 dark:text-surface-0">
       Movimientos — {{ period }}
     </h1>

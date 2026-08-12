@@ -1,0 +1,95 @@
+<div class="h-full overflow-y-auto flex flex-col gap-4 p-6">
+  <div class="flex flex-wrap items-start justify-between gap-4">
+    <div>
+      <a
+        routerLink="/statements"
+        class="inline-flex items-center gap-1 text-sm text-primary-500 group mb-2"
+      >
+        <i class="pi pi-arrow-left"></i>
+        <span class="group-hover:underline">Volver a resúmenes</span>
+      </a>
+      <h1 class="text-2xl font-semibold text-surface-900 dark:text-surface-0">
+        Análisis — {{ period }}
+      </h1>
+      @if (statement(); as s) {
+        <p class="text-surface-500 dark:text-surface-400 text-sm">{{ s.fileName }}</p>
+      }
+    </div>
+
+    <p-button label="Ver movimientos" icon="pi pi-list" (onClick)="viewTransactions()" />
+  </div>
+
+  @if (errorMessage()) {
+    <p-message severity="error" [text]="errorMessage()!" styleClass="w-full" />
+  }
+
+  @if (loading()) {
+    <p class="text-surface-400 dark:text-surface-500 text-sm">Cargando análisis…</p>
+  } @else if (statement(); as s) {
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <p-card>
+        <p class="text-sm text-surface-500 dark:text-surface-400">Saldo inicial</p>
+        <p class="text-xl font-semibold text-surface-900 dark:text-surface-0">
+          {{ s.summary.initialBalance | arsCurrency }}
+        </p>
+      </p-card>
+      <p-card>
+        <p class="text-sm text-surface-500 dark:text-surface-400">Créditos</p>
+        <p class="text-xl font-semibold text-surface-900 dark:text-surface-0">
+          {{ s.summary.credits | arsCurrency }}
+        </p>
+      </p-card>
+      <p-card>
+        <p class="text-sm text-surface-500 dark:text-surface-400">Débitos</p>
+        <p class="text-xl font-semibold text-surface-900 dark:text-surface-0">
+          {{ s.summary.debits | arsCurrency }}
+        </p>
+      </p-card>
+      <p-card>
+        <p class="text-sm text-surface-500 dark:text-surface-400">Saldo final</p>
+        <p class="text-xl font-semibold text-surface-900 dark:text-surface-0">
+          {{ s.summary.finalBalance | arsCurrency }}
+        </p>
+      </p-card>
+    </div>
+
+    <p-card>
+      <p class="text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">
+        Evolución del saldo
+      </p>
+      <div class="h-72">
+        <p-chart type="line" [data]="balanceChartData()" [options]="balanceChartOptions()" />
+      </div>
+    </p-card>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+      <p-card>
+        <p class="text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">
+          Flujo diario (ingresos / egresos)
+        </p>
+        <div class="h-72">
+          <p-chart type="bar" [data]="dailyFlowChartData()" [options]="dailyFlowChartOptions()" />
+        </div>
+      </p-card>
+
+      <p-card>
+        <p class="text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">
+          Egresos por categoría
+        </p>
+        @if (hasExpenseBreakdown) {
+          <div class="h-72">
+            <p-chart
+              type="doughnut"
+              [data]="expenseBreakdownChartData()"
+              [options]="expenseBreakdownChartOptions()"
+            />
+          </div>
+        } @else {
+          <p class="text-surface-400 dark:text-surface-500 text-sm text-center py-10">
+            Este resumen no tiene egresos.
+          </p>
+        }
+      </p-card>
+    </div>
+  }
+</div>

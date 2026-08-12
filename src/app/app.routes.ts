@@ -35,6 +35,13 @@ export const routes: Routes = [
       {
         path: 'statements/:id',
         loadComponent: () =>
+          import('./features/statements/analysis/statement-analysis').then(
+            (m) => m.StatementAnalysis,
+          ),
+      },
+      {
+        path: 'statements/:id/transactions',
+        loadComponent: () =>
           import('./features/statements/detail/transactions-list').then(
             (m) => m.TransactionsList,
           ),
