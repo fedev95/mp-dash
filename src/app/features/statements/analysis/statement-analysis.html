@@ -91,5 +91,20 @@
         }
       </p-card>
     </div>
+
+    <div class="flex justify-end">
+      <p-button
+        label="Eliminar resumen"
+        icon="pi pi-trash"
+        severity="danger"
+        (onClick)="deleteDialogVisible.set(true)"
+      />
+    </div>
   }
 </div>
+
+<app-delete-statement-dialog
+  [statement]="statement()"
+  [(visible)]="deleteDialogVisible"
+  (deleted)="onDeleted()"
+/>

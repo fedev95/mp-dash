@@ -12,3 +12,12 @@ export function formatPeriod(periodStart: string | null): string {
   const formatted = monthYearFormatter.format(new Date(year, month - 1, 1));
   return formatted.charAt(0).toUpperCase() + formatted.slice(1);
 }
+
+/** Formats an ISO (YYYY-MM-DD) period start date as "MM-AAAA", e.g. "02-2026". */
+export function periodCode(periodStart: string | null): string {
+  if (!periodStart) {
+    return '';
+  }
+  const [year, month] = periodStart.split('-');
+  return `${month}-${year}`;
+}

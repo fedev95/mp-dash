@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { Auth } from '@angular/fire/auth';
-import { Firestore, addDoc, collection, doc, getDoc, getDocs } from '@angular/fire/firestore/lite';
+import { Firestore, addDoc, collection, deleteDoc, doc, getDoc, getDocs } from '@angular/fire/firestore/lite';
 import { AccountStatement, StatementDetail, StatementRecord } from '../models/account-statement.model';
 
 @Injectable({ providedIn: 'root' })
@@ -57,5 +57,16 @@ export class StatementsService {
 
     const data = snapshot.data() as Omit<StatementDetail, 'id'>;
     return { id: snapshot.id, ...data };
+  }
+
+  /** Permanently deletes a statement owned by the current user. */
+  async deleteStatement(id: string): Promise<void> {
+    const user = this.auth.currentUser;
+    if (!user) {
+      throw new Error('No hay un usuario autenticado.');
+    }
+
+    const docRef = doc(this.firestore, 'users', user.uid, 'statements', id);
+    await deleteDoc(docRef);
   }
 }

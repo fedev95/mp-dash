@@ -10,6 +10,7 @@ import { ArsCurrencyPipe } from '../../../core/pipes/ars-currency.pipe';
 import { formatPeriod } from '../../../core/utils/format-period';
 import { categorizeTransaction } from '../../../core/utils/transaction-category';
 import { categoryColor, getChartTheme } from '../../../core/utils/chart-theme';
+import { DeleteStatementDialog } from '../delete-statement-dialog/delete-statement-dialog';
 
 const arsCurrency = new ArsCurrencyPipe();
 
@@ -20,7 +21,15 @@ function shortDate(iso: string): string {
 
 @Component({
   selector: 'app-statement-analysis',
-  imports: [CardModule, ButtonModule, MessageModule, ChartModule, ArsCurrencyPipe, RouterLink],
+  imports: [
+    CardModule,
+    ButtonModule,
+    MessageModule,
+    ChartModule,
+    ArsCurrencyPipe,
+    RouterLink,
+    DeleteStatementDialog,
+  ],
   templateUrl: './statement-analysis.html',
 })
 export class StatementAnalysis implements OnInit {
@@ -32,6 +41,7 @@ export class StatementAnalysis implements OnInit {
   readonly statement = signal<StatementDetail | null>(null);
   readonly loading = signal(true);
   readonly errorMessage = signal<string | null>(null);
+  readonly deleteDialogVisible = signal(false);
   private readonly isDark = signal(document.documentElement.classList.contains('dark'));
 
   private readonly theme = computed(() => getChartTheme(this.isDark()));
@@ -175,6 +185,10 @@ export class StatementAnalysis implements OnInit {
     if (id) {
       this.router.navigate(['/statements', id, 'transactions']);
     }
+  }
+
+  onDeleted(): void {
+    this.router.navigate(['/statements']);
   }
 
   private buildAxisChartOptions() {

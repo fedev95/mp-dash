@@ -1,0 +1,54 @@
+<p-dialog
+  header="Eliminar resumen"
+  [visible]="visible()"
+  (visibleChange)="visible.set($event)"
+  [modal]="true"
+  [closable]="!deleting()"
+  [dismissableMask]="!deleting()"
+  [draggable]="false"
+  [resizable]="false"
+  [style]="{ width: '28rem' }"
+  (onHide)="reset()"
+>
+  @if (statement(); as s) {
+    <p class="text-sm text-surface-600 dark:text-surface-300">
+      Esta acción no se puede deshacer. Para confirmar, escribí el período
+      <span class="font-semibold text-surface-900 dark:text-surface-0">{{ expectedPeriod() }}</span>
+      (MM-AAAA).
+    </p>
+
+    <input
+      pInputText
+      type="text"
+      inputmode="numeric"
+      autocomplete="off"
+      placeholder="MM-AAAA"
+      maxlength="7"
+      class="w-full mt-4"
+      [value]="inputValue()"
+      (input)="onInput($event)"
+      [disabled]="deleting()"
+    />
+
+    @if (errorMessage()) {
+      <p-message severity="error" [text]="errorMessage()!" styleClass="w-full mt-3" />
+    }
+
+    <div class="flex justify-end gap-2 mt-5">
+      <p-button
+        label="Cancelar"
+        severity="secondary"
+        [outlined]="true"
+        [disabled]="deleting()"
+        (onClick)="visible.set(false)"
+      />
+      <p-button
+        label="Eliminar"
+        severity="danger"
+        [loading]="deleting()"
+        [disabled]="!isValid()"
+        (onClick)="confirm()"
+      />
+    </div>
+  }
+</p-dialog>
