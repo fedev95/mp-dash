@@ -42,6 +42,16 @@ export class StatementsService {
     return docRef.id;
   }
 
+  /** Finds the statement (if any) already covering the same year-month as `periodStart`. */
+  async findExistingForPeriod(periodStart: string | null): Promise<StatementRecord | null> {
+    const periodKey = periodStart?.slice(0, 7) ?? null;
+    if (!periodKey) {
+      return null;
+    }
+    const statements = await this.getStatements();
+    return statements.find((s) => s.periodStart?.slice(0, 7) === periodKey) ?? null;
+  }
+
   /** Lists every statement previously uploaded by the current user. */
   async getStatements(): Promise<StatementRecord[]> {
     const user = this.auth.currentUser;

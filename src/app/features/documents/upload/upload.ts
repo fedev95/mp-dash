@@ -1,8 +1,12 @@
 import { Component, ViewChild, inject, signal } from '@angular/core';
 import { FileUpload, FileUploadHandlerEvent, FileUploadModule } from 'primeng/fileupload';
 import { MessageModule } from 'primeng/message';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { ConfirmationService } from 'primeng/api';
 import { parseMpStatement } from '../../../core/parsers/mp-statement-parser';
 import { StatementsService } from '../../../core/services/statements.service';
+import { StatementRecord } from '../../../core/models/account-statement.model';
+import { formatPeriod } from '../../../core/utils/format-period';
 
 interface UploadResult {
   fileName: string;
@@ -12,11 +16,13 @@ interface UploadResult {
 
 @Component({
   selector: 'app-upload',
-  imports: [FileUploadModule, MessageModule],
+  imports: [FileUploadModule, MessageModule, ConfirmDialogModule],
+  providers: [ConfirmationService],
   templateUrl: './upload.html',
 })
 export class Upload {
   private readonly statementsService = inject(StatementsService);
+  private readonly confirmationService = inject(ConfirmationService);
 
   @ViewChild(FileUpload) fileUpload?: FileUpload;
 
@@ -39,6 +45,23 @@ export class Upload {
         }
         const text = await file.text();
         const statement = parseMpStatement(text);
+
+        const duplicate = await this.statementsService.findExistingForPeriod(
+          statement.transactions[0]?.releaseDate ?? null,
+        );
+        if (duplicate) {
+          const replace = await this.confirmReplace(duplicate);
+          if (!replace) {
+            outcomes.push({
+              fileName: file.name,
+              status: 'error',
+              detail: `Carga cancelada: ya existe un resumen para ${formatPeriod(duplicate.periodStart)}.`,
+            });
+            continue;
+          }
+          await this.statementsService.deleteStatement(duplicate.id);
+        }
+
         await this.statementsService.uploadStatement(file.name, statement);
         outcomes.push({
           fileName: file.name,
@@ -57,5 +80,19 @@ export class Upload {
     this.results.set(outcomes);
     this.uploading.set(false);
     this.fileUpload?.clear();
+  }
+
+  private confirmReplace(existing: StatementRecord): Promise<boolean> {
+    return new Promise((resolve) => {
+      this.confirmationService.confirm({
+        header: 'Reemplazar resumen',
+        message: `Ya existe un resumen cargado para ${formatPeriod(existing.periodStart)}. ¿Querés reemplazarlo por este archivo?`,
+        icon: 'pi pi-exclamation-triangle',
+        acceptLabel: 'Reemplazar',
+        rejectLabel: 'Cancelar',
+        accept: () => resolve(true),
+        reject: () => resolve(false),
+      });
+    });
   }
 }
