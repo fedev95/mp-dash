@@ -6,12 +6,18 @@ import { MessageModule } from 'primeng/message';
 import { ChartModule } from 'primeng/chart';
 import { StatementsService } from '../../../core/services/statements.service';
 import { CategoriesService } from '../../../core/services/categories.service';
-import { IndexedTransaction, StatementDetail } from '../../../core/models/account-statement.model';
+import {
+  IndexedTransaction,
+  StatementDetail,
+  StatementRecord,
+} from '../../../core/models/account-statement.model';
 import { Category } from '../../../core/models/category.model';
 import { ArsCurrencyPipe } from '../../../core/pipes/ars-currency.pipe';
+import { FavorableClassPipe } from '../../../core/pipes/favorable-class.pipe';
 import { formatPeriod } from '../../../core/utils/format-period';
 import { categorizeTransaction } from '../../../core/utils/transaction-category';
 import { categoryColor, getChartTheme } from '../../../core/utils/chart-theme';
+import { computeDelta, findPreviousStatement } from '../../../core/utils/period-delta';
 import { DeleteStatementDialog } from '../delete-statement-dialog/delete-statement-dialog';
 
 const arsCurrency = new ArsCurrencyPipe();
@@ -29,6 +35,7 @@ function shortDate(iso: string): string {
     MessageModule,
     ChartModule,
     ArsCurrencyPipe,
+    FavorableClassPipe,
     RouterLink,
     DeleteStatementDialog,
   ],
@@ -43,9 +50,36 @@ export class StatementAnalysis implements OnInit {
 
   readonly statement = signal<StatementDetail | null>(null);
   readonly categories = signal<Category[]>([]);
+  readonly previousStatement = signal<StatementRecord | null>(null);
   readonly loading = signal(true);
   readonly errorMessage = signal<string | null>(null);
   readonly deleteDialogVisible = signal(false);
+
+  readonly previousPeriodLabel = computed(() =>
+    formatPeriod(this.previousStatement()?.periodStart ?? null),
+  );
+
+  readonly creditsDelta = computed(() => {
+    const prev = this.previousStatement();
+    const s = this.statement();
+    return prev && s ? computeDelta(s.summary.credits, prev.summary.credits, true) : null;
+  });
+
+  readonly debitsDelta = computed(() => {
+    const prev = this.previousStatement();
+    const s = this.statement();
+    // `debits` is stored negative (money out), so compare spending as a magnitude:
+    // more negative = more spent, which must read as an increase, not a decrease.
+    return prev && s
+      ? computeDelta(Math.abs(s.summary.debits), Math.abs(prev.summary.debits), false)
+      : null;
+  });
+
+  readonly finalBalanceDelta = computed(() => {
+    const prev = this.previousStatement();
+    const s = this.statement();
+    return prev && s ? computeDelta(s.summary.finalBalance, prev.summary.finalBalance, true) : null;
+  });
   private readonly isDark = signal(document.documentElement.classList.contains('dark'));
 
   private readonly theme = computed(() => getChartTheme(this.isDark()));
@@ -196,12 +230,14 @@ export class StatementAnalysis implements OnInit {
     this.loading.set(true);
     this.errorMessage.set(null);
     try {
-      const [statement, categories] = await Promise.all([
+      const [statement, categories, allStatements] = await Promise.all([
         this.statementsService.getStatementById(id),
         this.categoriesService.listCategories(),
+        this.statementsService.getStatements(),
       ]);
       this.statement.set(statement);
       this.categories.set(categories);
+      this.previousStatement.set(findPreviousStatement(allStatements, statement.periodStart));
     } catch (err) {
       this.errorMessage.set(err instanceof Error ? err.message : 'Ocurrió un error inesperado.');
     } finally {

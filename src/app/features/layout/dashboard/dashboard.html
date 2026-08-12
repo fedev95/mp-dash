@@ -47,12 +47,32 @@
         <p class="text-xl font-semibold" [class]="yearCredits() | amountClass">
           {{ yearCredits() | arsCurrency }}
         </p>
+        @if (yearCreditsDelta(); as d) {
+          <p class="text-xs font-medium flex items-center gap-1 mt-1" [class]="d.favorable | favorableClass">
+            <i class="pi" [class.pi-arrow-up]="d.absolute >= 0" [class.pi-arrow-down]="d.absolute < 0"></i>
+            @if (d.pct !== null) {
+              <span>{{ d.pct > 0 ? '+' : '' }}{{ d.pct }}% vs. {{ selectedYear() - 1 }}</span>
+            } @else {
+              <span>{{ d.absolute > 0 ? '+' : '' }}{{ d.absolute | arsCurrency }} vs. {{ selectedYear() - 1 }}</span>
+            }
+          </p>
+        }
       </p-card>
       <p-card>
         <p class="text-sm text-surface-500 dark:text-surface-400">Débitos del año</p>
         <p class="text-xl font-semibold" [class]="yearDebits() | amountClass">
           {{ yearDebits() | arsCurrency }}
         </p>
+        @if (yearDebitsDelta(); as d) {
+          <p class="text-xs font-medium flex items-center gap-1 mt-1" [class]="d.favorable | favorableClass">
+            <i class="pi" [class.pi-arrow-up]="d.absolute >= 0" [class.pi-arrow-down]="d.absolute < 0"></i>
+            @if (d.pct !== null) {
+              <span>{{ d.pct > 0 ? '+' : '' }}{{ d.pct }}% vs. {{ selectedYear() - 1 }}</span>
+            } @else {
+              <span>{{ d.absolute > 0 ? '+' : '' }}{{ d.absolute | arsCurrency }} vs. {{ selectedYear() - 1 }}</span>
+            }
+          </p>
+        }
       </p-card>
     </div>
 

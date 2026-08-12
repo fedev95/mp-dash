@@ -16,9 +16,11 @@ import {
 import { Category } from '../../../core/models/category.model';
 import { ArsCurrencyPipe } from '../../../core/pipes/ars-currency.pipe';
 import { AmountClassPipe } from '../../../core/pipes/amount-class.pipe';
+import { FavorableClassPipe } from '../../../core/pipes/favorable-class.pipe';
 import { formatPeriod } from '../../../core/utils/format-period';
 import { categorizeTransaction } from '../../../core/utils/transaction-category';
 import { categoryColor, getChartTheme } from '../../../core/utils/chart-theme';
+import { computeDelta } from '../../../core/utils/period-delta';
 
 const arsCurrency = new ArsCurrencyPipe();
 
@@ -72,6 +74,7 @@ function shortPeriod(periodStart: string | null): string {
     FormsModule,
     ArsCurrencyPipe,
     AmountClassPipe,
+    FavorableClassPipe,
     RouterLink,
   ],
   templateUrl: './dashboard.html',
@@ -117,6 +120,32 @@ export class Dashboard implements OnInit {
   readonly yearDebits = computed(() =>
     this.yearStatements().reduce((sum, r) => sum + r.summary.debits, 0),
   );
+
+  readonly previousYearStatements = computed(() =>
+    this.statements().filter(
+      (r) => periodYear(r.periodStart ?? r.periodEnd) === this.selectedYear() - 1,
+    ),
+  );
+
+  readonly yearCreditsDelta = computed(() => {
+    const prev = this.previousYearStatements();
+    if (prev.length === 0) {
+      return null;
+    }
+    const prevCredits = prev.reduce((sum, r) => sum + r.summary.credits, 0);
+    return computeDelta(this.yearCredits(), prevCredits, true);
+  });
+
+  readonly yearDebitsDelta = computed(() => {
+    const prev = this.previousYearStatements();
+    if (prev.length === 0) {
+      return null;
+    }
+    const prevDebits = prev.reduce((sum, r) => sum + r.summary.debits, 0);
+    // `debits` is stored negative (money out); compare spending as a magnitude so a bigger
+    // real-world spend reads as an increase instead of a numeric decrease.
+    return computeDelta(Math.abs(this.yearDebits()), Math.abs(prevDebits), false);
+  });
 
   readonly latestStatement = computed(() => {
     const sorted = [...this.statements()].sort((a, b) =>

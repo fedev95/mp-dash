@@ -38,18 +38,48 @@
         <p class="text-xl font-semibold text-surface-900 dark:text-surface-0">
           {{ s.summary.credits | arsCurrency }}
         </p>
+        @if (creditsDelta(); as d) {
+          <p class="text-xs font-medium flex items-center gap-1 mt-1" [class]="d.favorable | favorableClass">
+            <i class="pi" [class.pi-arrow-up]="d.absolute >= 0" [class.pi-arrow-down]="d.absolute < 0"></i>
+            @if (d.pct !== null) {
+              <span>{{ d.pct > 0 ? '+' : '' }}{{ d.pct }}% vs. {{ previousPeriodLabel() }}</span>
+            } @else {
+              <span>{{ d.absolute > 0 ? '+' : '' }}{{ d.absolute | arsCurrency }} vs. {{ previousPeriodLabel() }}</span>
+            }
+          </p>
+        }
       </p-card>
       <p-card>
         <p class="text-sm text-surface-500 dark:text-surface-400">Débitos</p>
         <p class="text-xl font-semibold text-surface-900 dark:text-surface-0">
           {{ s.summary.debits | arsCurrency }}
         </p>
+        @if (debitsDelta(); as d) {
+          <p class="text-xs font-medium flex items-center gap-1 mt-1" [class]="d.favorable | favorableClass">
+            <i class="pi" [class.pi-arrow-up]="d.absolute >= 0" [class.pi-arrow-down]="d.absolute < 0"></i>
+            @if (d.pct !== null) {
+              <span>{{ d.pct > 0 ? '+' : '' }}{{ d.pct }}% vs. {{ previousPeriodLabel() }}</span>
+            } @else {
+              <span>{{ d.absolute > 0 ? '+' : '' }}{{ d.absolute | arsCurrency }} vs. {{ previousPeriodLabel() }}</span>
+            }
+          </p>
+        }
       </p-card>
       <p-card>
         <p class="text-sm text-surface-500 dark:text-surface-400">Saldo final</p>
         <p class="text-xl font-semibold text-surface-900 dark:text-surface-0">
           {{ s.summary.finalBalance | arsCurrency }}
         </p>
+        @if (finalBalanceDelta(); as d) {
+          <p class="text-xs font-medium flex items-center gap-1 mt-1" [class]="d.favorable | favorableClass">
+            <i class="pi" [class.pi-arrow-up]="d.absolute >= 0" [class.pi-arrow-down]="d.absolute < 0"></i>
+            @if (d.pct !== null) {
+              <span>{{ d.pct > 0 ? '+' : '' }}{{ d.pct }}% vs. {{ previousPeriodLabel() }}</span>
+            } @else {
+              <span>{{ d.absolute > 0 ? '+' : '' }}{{ d.absolute | arsCurrency }} vs. {{ previousPeriodLabel() }}</span>
+            }
+          </p>
+        }
       </p-card>
     </div>
 
