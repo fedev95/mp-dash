@@ -1,5 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
+
+const STORAGE_KEY = 'sidebar-collapsed';
 
 @Component({
   selector: 'app-sidebar',
@@ -12,4 +14,12 @@ export class Sidebar {
     { label: 'Cargar resúmenes', icon: 'pi pi-upload', path: '/documents' },
     { label: 'Resúmenes cargados', icon: 'pi pi-list', path: '/statements' },
   ];
+
+  readonly collapsed = signal(localStorage.getItem(STORAGE_KEY) === '1');
+
+  toggle(): void {
+    const next = !this.collapsed();
+    this.collapsed.set(next);
+    localStorage.setItem(STORAGE_KEY, next ? '1' : '0');
+  }
 }
