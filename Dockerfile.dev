@@ -1,0 +1,28 @@
+# syntax=docker/dockerfile:1
+
+##### Dockerfile.dev — full devcontainer image (Angular dev server + Claude Code) #####
+FROM node:22-alpine
+
+WORKDIR /app
+
+# bash: required by Claude Code's Bash tool (alpine only ships busybox sh by default)
+# git: required to work with the repo at all
+RUN apk add --no-cache bash git
+
+# The container runs as root over a repo bind-mounted from the host user,
+# so git needs to be told this ownership mismatch is fine or VS Code/Claude
+# Code won't see any changes.
+RUN git config --global --add safe.directory /app
+
+# Claude Code CLI, installed globally (needs Node regardless of project stack)
+RUN npm install -g @anthropic-ai/claude-code
+
+COPY package*.json ./
+RUN npm ci
+
+COPY . .
+RUN chmod +x ./docker-entrypoint.sh
+
+EXPOSE 4200
+
+ENTRYPOINT ["sh", "./docker-entrypoint.sh"]
