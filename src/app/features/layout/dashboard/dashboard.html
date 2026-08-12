@@ -1,19 +1,156 @@
-<div class="flex flex-col gap-6 p-6">
-  <h1 class="text-2xl font-semibold text-surface-900 dark:text-surface-0">Dashboard</h1>
+<div class="h-full overflow-y-auto flex flex-col gap-4 p-6">
+  <div class="flex flex-wrap items-start justify-between gap-4">
+    <div>
+      <h1 class="text-2xl font-semibold text-surface-900 dark:text-surface-0">Dashboard</h1>
+      <p class="text-surface-500 dark:text-surface-400 text-sm">Panorama de tus finanzas</p>
+    </div>
 
-  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-    @for (stat of stats; track stat.label) {
-      <p-card>
-        <div class="flex items-center gap-4">
-          <div class="w-12 h-12 rounded-lg bg-primary-50 dark:bg-primary-500/10 flex items-center justify-center">
-            <i [class]="stat.icon" class="text-primary-500 text-xl"></i>
-          </div>
-          <div>
-            <p class="text-sm text-surface-500 dark:text-surface-400">{{ stat.label }}</p>
-            <p class="text-xl font-semibold text-surface-900 dark:text-surface-0">{{ stat.value }}</p>
-          </div>
-        </div>
-      </p-card>
+    @if (availableYears().length > 0) {
+      <p-select
+        [options]="availableYears()"
+        [ngModel]="selectedYear()"
+        (ngModelChange)="onYearChange($event)"
+        placeholder="Año"
+      />
     }
   </div>
+
+  @if (errorMessage()) {
+    <p-message severity="error" [text]="errorMessage()!" styleClass="w-full" />
+  }
+
+  @if (loading()) {
+    <p class="text-surface-400 dark:text-surface-500 text-sm">Cargando…</p>
+  } @else {
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <p-card>
+        <p class="text-sm text-surface-500 dark:text-surface-400">Saldo actual</p>
+        <p class="text-xl font-semibold" [class]="latestBalance() | amountClass: false">
+          {{ latestBalance() | arsCurrency }}
+        </p>
+      </p-card>
+      <p-card>
+        <p class="text-sm text-surface-500 dark:text-surface-400">
+          Resúmenes cargados ({{ selectedYear() }})
+        </p>
+        <p class="text-xl font-semibold text-surface-900 dark:text-surface-0">
+          {{ yearStatements().length }} / 12
+        </p>
+      </p-card>
+      <p-card>
+        <p class="text-sm text-surface-500 dark:text-surface-400">Créditos del año</p>
+        <p class="text-xl font-semibold" [class]="yearCredits() | amountClass">
+          {{ yearCredits() | arsCurrency }}
+        </p>
+      </p-card>
+      <p-card>
+        <p class="text-sm text-surface-500 dark:text-surface-400">Débitos del año</p>
+        <p class="text-xl font-semibold" [class]="yearDebits() | amountClass">
+          {{ yearDebits() | arsCurrency }}
+        </p>
+      </p-card>
+    </div>
+
+    <p-card>
+      <p class="text-sm font-medium text-surface-700 dark:text-surface-300 mb-3">
+        Cobertura {{ selectedYear() }}
+      </p>
+      <div class="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-6 gap-3">
+        @for (cell of monthCells(); track cell.month) {
+          <button
+            type="button"
+            class="flex flex-col items-center justify-center gap-1 rounded-lg py-4 transition-colors"
+            [class]="monthCellClasses(cell)"
+            [disabled]="cell.isFuture"
+            (click)="openMonth(cell)"
+          >
+            @if (cell.record) {
+              <i class="pi pi-check-circle"></i>
+            } @else if (!cell.isFuture) {
+              <i class="pi pi-plus-circle"></i>
+            } @else {
+              <i class="pi pi-minus"></i>
+            }
+            <span class="text-sm font-medium">{{ cell.label }}</span>
+          </button>
+        }
+      </div>
+    </p-card>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+      <p-card>
+        <p class="text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">
+          Evolución del saldo
+        </p>
+        @if (hasStatements) {
+          <div class="h-72">
+            <p-chart type="line" [data]="balanceChartData()" [options]="balanceChartOptions()" />
+          </div>
+        } @else {
+          <p class="text-surface-400 dark:text-surface-500 text-sm text-center py-10">
+            Todavía no hay resúmenes cargados.
+          </p>
+        }
+      </p-card>
+
+      <p-card>
+        <p class="text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">
+          Gastos por categoría ({{ selectedYear() }})
+        </p>
+        @if (yearDetailsLoading()) {
+          <p class="text-surface-400 dark:text-surface-500 text-sm text-center py-10">Cargando…</p>
+        } @else if (hasExpenseBreakdown) {
+          <div class="h-72">
+            <p-chart
+              type="doughnut"
+              [data]="expenseBreakdownChartData()"
+              [options]="expenseBreakdownChartOptions()"
+            />
+          </div>
+        } @else {
+          <p class="text-surface-400 dark:text-surface-500 text-sm text-center py-10">
+            Sin egresos este año.
+          </p>
+        }
+      </p-card>
+    </div>
+
+    <p-card>
+      <p class="text-sm font-medium text-surface-700 dark:text-surface-300 mb-3">
+        Últimos resúmenes
+      </p>
+      @if (recentStatements().length > 0) {
+        <div class="flex flex-col divide-y divide-surface-200 dark:divide-surface-700">
+          @for (record of recentStatements(); track record.id) {
+            <a
+              [routerLink]="['/statements', record.id]"
+              class="flex items-center justify-between gap-3 py-3 first:pt-0 last:pb-0 hover:bg-surface-50 dark:hover:bg-surface-800 -mx-2 px-2 rounded-lg transition-colors"
+            >
+              <div class="min-w-0">
+                <p class="font-medium text-surface-900 dark:text-surface-0">
+                  {{ formatPeriod(record) }}
+                </p>
+                <p class="text-xs text-surface-400 dark:text-surface-500 truncate">
+                  {{ record.fileName }}
+                </p>
+              </div>
+              <div class="flex items-center gap-2 shrink-0">
+                <span class="font-medium" [class]="record.summary.finalBalance | amountClass: false">
+                  {{ record.summary.finalBalance | arsCurrency }}
+                </span>
+                <i class="pi pi-chevron-right text-surface-300 dark:text-surface-600"></i>
+              </div>
+            </a>
+          }
+        </div>
+      } @else {
+        <div class="flex flex-col items-center gap-3 text-center py-10">
+          <p class="text-surface-400 dark:text-surface-500 text-sm">
+            Todavía no subiste ningún resumen.
+          </p>
+          <p-button label="Cargar resumen" icon="pi pi-upload" (onClick)="goToUpload()" />
+        </div>
+      }
+    </p-card>
+  }
 </div>
