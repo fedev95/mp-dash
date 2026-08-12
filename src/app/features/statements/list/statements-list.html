@@ -1,9 +1,20 @@
 <div class="h-full flex flex-col gap-4">
-  <div>
-    <h1 class="text-2xl font-semibold text-surface-900 dark:text-surface-0">Resúmenes cargados</h1>
-    <p class="text-surface-500 dark:text-surface-400 text-sm">
-      Historial de resúmenes mensuales subidos
-    </p>
+  <div class="flex items-start justify-between gap-4">
+    <div>
+      <h1 class="text-2xl font-semibold text-surface-900 dark:text-surface-0">Resúmenes cargados</h1>
+      <p class="text-surface-500 dark:text-surface-400 text-sm">
+        Historial de resúmenes mensuales subidos
+      </p>
+    </div>
+
+    @if (availableYears().length > 0) {
+      <p-select
+        [options]="availableYears()"
+        [ngModel]="selectedYear()"
+        (ngModelChange)="selectedYear.set($event)"
+        placeholder="Año"
+      />
+    }
   </div>
 
   @if (errorMessage()) {
@@ -12,7 +23,7 @@
 
   <div class="flex-1 min-h-0">
     <p-table
-      [value]="statements()"
+      [value]="filteredStatements()"
       [loading]="loading()"
       scrollable
       scrollHeight="flex"
