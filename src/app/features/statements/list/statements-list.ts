@@ -7,6 +7,7 @@ import { SelectModule } from 'primeng/select';
 import { StatementsService } from '../../../core/services/statements.service';
 import { StatementRecord } from '../../../core/models/account-statement.model';
 import { ArsCurrencyPipe } from '../../../core/pipes/ars-currency.pipe';
+import { AmountClassPipe } from '../../../core/pipes/amount-class.pipe';
 import { formatPeriod } from '../../../core/utils/format-period';
 
 /** Extracts the year (as a number) from an ISO (YYYY-MM-DD) period date. */
@@ -19,7 +20,7 @@ function periodYear(period: string | null): number | null {
 
 @Component({
   selector: 'app-statements-list',
-  imports: [TableModule, MessageModule, SelectModule, FormsModule, ArsCurrencyPipe],
+  imports: [TableModule, MessageModule, SelectModule, FormsModule, ArsCurrencyPipe, AmountClassPipe],
   templateUrl: './statements-list.html',
 })
 export class StatementsList implements OnInit {

@@ -25,6 +25,7 @@
     <p-table
       [value]="filteredStatements()"
       [loading]="loading()"
+      [stripedRows]="true"
       scrollable
       scrollHeight="flex"
       sortField="periodStart"
@@ -51,10 +52,16 @@
           (click)="openStatement(record)"
         >
           <td>{{ formatPeriod(record) }}</td>
-          <td>{{ record.summary.initialBalance | arsCurrency }}</td>
-          <td>{{ record.summary.credits | arsCurrency }}</td>
-          <td>{{ record.summary.debits | arsCurrency }}</td>
-          <td>{{ record.summary.finalBalance | arsCurrency }}</td>
+          <td [class]="record.summary.initialBalance | amountClass: false">
+            {{ record.summary.initialBalance | arsCurrency }}
+          </td>
+          <td [class]="record.summary.credits | amountClass">
+            {{ record.summary.credits | arsCurrency }}
+          </td>
+          <td [class]="record.summary.debits | amountClass">{{ record.summary.debits | arsCurrency }}</td>
+          <td [class]="record.summary.finalBalance | amountClass: false">
+            {{ record.summary.finalBalance | arsCurrency }}
+          </td>
         </tr>
       </ng-template>
       <ng-template pTemplate="emptymessage">
