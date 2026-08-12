@@ -33,6 +33,13 @@ export const routes: Routes = [
           import('./features/categories/list/categories-list').then((m) => m.CategoriesList),
       },
       {
+        path: 'movements',
+        loadComponent: () =>
+          import('./features/movements/movements-list/movements-list').then(
+            (m) => m.MovementsList,
+          ),
+      },
+      {
         path: 'statements',
         loadComponent: () =>
           import('./features/statements/list/statements-list').then((m) => m.StatementsList),

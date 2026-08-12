@@ -11,6 +11,7 @@ const STORAGE_KEY = 'sidebar-collapsed';
 export class Sidebar {
   readonly links = [
     { label: 'Dashboard', icon: 'pi pi-home', path: '/' },
+    { label: 'Movimientos', icon: 'pi pi-search', path: '/movements' },
     { label: 'Resúmenes', icon: 'pi pi-list', path: '/statements' },
     { label: 'Categorías', icon: 'pi pi-tags', path: '/categories' },
     { label: 'Cargar resúmenes', icon: 'pi pi-upload', path: '/documents' },

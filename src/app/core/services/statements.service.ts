@@ -95,6 +95,12 @@ export class StatementsService {
     return { id: snapshot.id, ...data, transactions: withStableIds(data.transactions) };
   }
 
+  /** Fetches every statement's full detail (including transactions) for the current user. */
+  async getAllStatementDetails(): Promise<StatementDetail[]> {
+    const records = await this.getStatements();
+    return Promise.all(records.map((record) => this.getStatementById(record.id)));
+  }
+
   /** Permanently deletes a statement owned by the current user. */
   async deleteStatement(id: string): Promise<void> {
     const user = this.auth.currentUser;

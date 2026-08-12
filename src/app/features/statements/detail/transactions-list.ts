@@ -10,7 +10,7 @@ import { ArsCurrencyPipe } from '../../../core/pipes/ars-currency.pipe';
 import { AmountClassPipe } from '../../../core/pipes/amount-class.pipe';
 import { IsoDatePipe } from '../../../core/pipes/iso-date.pipe';
 import { formatPeriod } from '../../../core/utils/format-period';
-import { categorizeTransaction } from '../../../core/utils/transaction-category';
+import { effectiveCategory } from '../../../core/utils/effective-category';
 import { NoteDialog } from '../note-dialog/note-dialog';
 
 @Component({
@@ -45,8 +45,9 @@ export class TransactionsList implements OnInit {
 
   readonly rows = computed(() => {
     const transactions = this.statement()?.transactions ?? [];
+    const categories = this.categories();
     return transactions.map((tx) => {
-      const category = this.categoryFor(tx);
+      const category = effectiveCategory(tx, categories);
       return { ...tx, categoryLabel: category.name, categoryColorValue: category.color };
     });
   });
@@ -76,20 +77,6 @@ export class TransactionsList implements OnInit {
     } finally {
       this.loading.set(false);
     }
-  }
-
-  categoryFor(tx: IndexedTransaction): { name: string; color: string | null } {
-    if (tx.categoryId) {
-      const match = this.categories().find((c) => c.id === tx.categoryId);
-      if (match) {
-        return { name: match.name, color: match.color };
-      }
-    }
-    const autoName = categorizeTransaction(tx.transactionType);
-    const autoMatch = this.categories().find((c) => c.name === autoName);
-    return autoMatch
-      ? { name: autoMatch.name, color: autoMatch.color }
-      : { name: autoName, color: null };
   }
 
   openTransaction(tx: IndexedTransaction): void {
