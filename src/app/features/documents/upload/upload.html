@@ -1,47 +1,58 @@
 <p-confirmDialog />
 
-<div class="flex flex-col gap-6 max-w-3xl p-6">
-  <div>
-    <h1 class="text-2xl font-semibold text-surface-900 dark:text-surface-0">Cargar resúmenes</h1>
-    <p class="text-surface-500 dark:text-surface-400 text-sm">
-      Subí tus resúmenes mensuales de cuenta en formato .csv
-    </p>
-  </div>
-
-  <p-fileupload
-    mode="advanced"
-    name="statements"
-    [customUpload]="true"
-    [multiple]="true"
-    accept=".csv"
-    chooseLabel="Elegir archivos"
-    uploadLabel="Confirmar subida"
-    invalidFileTypeMessageSummary="Archivo inválido"
-    invalidFileTypeMessageDetail="Solo se admiten archivos .csv."
-    (onSelect)="onSelect()"
-    (uploadHandler)="onConfirmUpload($event)"
-  >
-    <ng-template pTemplate="empty">
-      <div class="flex flex-col items-center justify-center gap-2 py-10 text-surface-400 dark:text-surface-500">
-        <i class="pi pi-cloud-upload text-4xl"></i>
-        <span>Arrastrá tus archivos .csv acá</span>
-      </div>
-    </ng-template>
-  </p-fileupload>
-
-  @if (uploading()) {
-    <p-message severity="info" text="Subiendo archivos..." styleClass="w-full" />
-  }
-
-  @if (results().length) {
-    <div class="flex flex-col gap-2">
-      @for (r of results(); track r.fileName) {
-        <p-message
-          [severity]="r.status === 'success' ? 'success' : 'error'"
-          [text]="r.fileName + ': ' + r.detail"
-          styleClass="w-full"
-        />
-      }
+<div class="h-full overflow-y-auto p-6">
+  <div class="max-w-2xl mx-auto flex flex-col gap-4">
+    <div>
+      <h1 class="text-2xl font-semibold text-surface-900 dark:text-surface-0">Cargar resúmenes</h1>
+      <p class="text-surface-500 dark:text-surface-400 text-sm">
+        Subí tus resúmenes mensuales de cuenta en formato .csv
+      </p>
     </div>
-  }
+
+    <p-card>
+      <div class="flex items-center gap-2 mb-3">
+        <i class="pi pi-cloud-upload text-primary-500"></i>
+        <p class="font-medium text-surface-700 dark:text-surface-300">Archivo</p>
+      </div>
+
+      <p-fileupload
+        mode="advanced"
+        name="statements"
+        [customUpload]="true"
+        [multiple]="true"
+        accept=".csv"
+        chooseLabel="Elegir archivos"
+        uploadLabel="Confirmar subida"
+        invalidFileTypeMessageSummary="Archivo inválido"
+        invalidFileTypeMessageDetail="Solo se admiten archivos .csv."
+        (onSelect)="onSelect()"
+        (uploadHandler)="onConfirmUpload($event)"
+      >
+        <ng-template pTemplate="empty">
+          <div
+            class="flex flex-col items-center justify-center gap-2 py-10 text-surface-400 dark:text-surface-500"
+          >
+            <i class="pi pi-cloud-upload text-4xl"></i>
+            <span>Arrastrá tus archivos .csv acá</span>
+          </div>
+        </ng-template>
+      </p-fileupload>
+
+      @if (uploading()) {
+        <p-message severity="info" text="Subiendo archivos..." styleClass="w-full mt-4" />
+      }
+
+      @if (results().length) {
+        <div class="flex flex-col gap-2 mt-4">
+          @for (r of results(); track r.fileName) {
+            <p-message
+              [severity]="r.status === 'success' ? 'success' : 'error'"
+              [text]="r.fileName + ': ' + r.detail"
+              styleClass="w-full"
+            />
+          }
+        </div>
+      }
+    </p-card>
+  </div>
 </div>

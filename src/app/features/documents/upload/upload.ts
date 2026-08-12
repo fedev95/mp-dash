@@ -1,6 +1,7 @@
 import { Component, ViewChild, inject, signal } from '@angular/core';
 import { FileUpload, FileUploadHandlerEvent, FileUploadModule } from 'primeng/fileupload';
 import { MessageModule } from 'primeng/message';
+import { CardModule } from 'primeng/card';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ConfirmationService } from 'primeng/api';
 import { parseMpStatement } from '../../../core/parsers/mp-statement-parser';
@@ -16,7 +17,7 @@ interface UploadResult {
 
 @Component({
   selector: 'app-upload',
-  imports: [FileUploadModule, MessageModule, ConfirmDialogModule],
+  imports: [FileUploadModule, MessageModule, CardModule, ConfirmDialogModule],
   providers: [ConfirmationService],
   templateUrl: './upload.html',
 })
