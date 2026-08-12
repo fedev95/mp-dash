@@ -1,0 +1,164 @@
+<div class="h-full overflow-y-auto p-6">
+  <div class="max-w-2xl mx-auto flex flex-col gap-4">
+    <div class="flex items-start justify-between gap-4">
+      <div>
+        <h1 class="text-2xl font-semibold text-surface-900 dark:text-surface-0">Categorías</h1>
+        <p class="text-surface-500 dark:text-surface-400 text-sm">
+          Categorías propias para clasificar tus movimientos
+        </p>
+      </div>
+
+      <p-button label="Nueva categoría" icon="pi pi-plus" (onClick)="openCreate()" />
+    </div>
+
+    @if (errorMessage()) {
+      <p-message severity="error" [text]="errorMessage()!" styleClass="w-full" />
+    }
+
+    <p-card>
+      @if (loading()) {
+        <p class="text-surface-400 dark:text-surface-500 text-sm text-center py-10">
+          Cargando categorías…
+        </p>
+      } @else if (categories().length === 0) {
+        <div class="flex flex-col items-center gap-2 text-center py-10">
+          <i class="pi pi-tags text-3xl text-surface-300 dark:text-surface-600"></i>
+          <p class="text-surface-400 dark:text-surface-500 text-sm">
+            Todavía no creaste ninguna categoría.
+          </p>
+        </div>
+      } @else {
+        <div class="flex flex-col divide-y divide-surface-200 dark:divide-surface-700">
+          @for (category of categories(); track category.id) {
+            <div class="flex items-center justify-between gap-3 py-3 first:pt-0 last:pb-0">
+              <div class="flex items-center gap-3 min-w-0">
+                <span
+                  class="inline-block w-3.5 h-3.5 rounded-full shrink-0"
+                  [style.background-color]="category.color"
+                ></span>
+                <p class="font-medium text-surface-900 dark:text-surface-0 truncate">
+                  {{ category.name }}
+                </p>
+              </div>
+              <div class="flex items-center gap-1 shrink-0">
+                <p-button
+                  icon="pi pi-pencil"
+                  [text]="true"
+                  [rounded]="true"
+                  size="small"
+                  ariaLabel="Editar categoría"
+                  (onClick)="openEdit(category)"
+                />
+                <p-button
+                  icon="pi pi-trash"
+                  severity="danger"
+                  [text]="true"
+                  [rounded]="true"
+                  size="small"
+                  ariaLabel="Eliminar categoría"
+                  (onClick)="requestDelete(category)"
+                />
+              </div>
+            </div>
+          }
+        </div>
+      }
+    </p-card>
+  </div>
+</div>
+
+<p-dialog
+  [header]="editingId() ? 'Editar categoría' : 'Nueva categoría'"
+  [visible]="formVisible()"
+  (visibleChange)="formVisible.set($event)"
+  [modal]="true"
+  [closable]="!saving()"
+  [dismissableMask]="!saving()"
+  [draggable]="false"
+  [resizable]="false"
+  [style]="{ width: '26rem' }"
+>
+  <div class="flex items-center gap-2 mb-5 p-3 rounded-lg bg-surface-50 dark:bg-surface-800">
+    <span
+      class="inline-block w-3 h-3 rounded-full shrink-0"
+      [style.background-color]="colorValue()"
+    ></span>
+    <span class="text-sm font-medium text-surface-700 dark:text-surface-200 truncate">
+      {{ nameValue() || 'Nombre de la categoría' }}
+    </span>
+  </div>
+
+  <label class="block text-sm text-surface-600 dark:text-surface-300 mb-1">Nombre</label>
+  <input
+    pInputText
+    type="text"
+    autocomplete="off"
+    class="w-full"
+    [ngModel]="nameValue()"
+    (ngModelChange)="nameValue.set($event)"
+    [disabled]="saving()"
+  />
+
+  <label class="block text-sm text-surface-600 dark:text-surface-300 mt-4 mb-2">Color</label>
+  <div class="flex flex-wrap gap-2">
+    @for (swatch of palette; track swatch) {
+      <button
+        type="button"
+        class="w-7 h-7 rounded-full transition-transform"
+        [class]="swatchClasses(swatch)"
+        [style.background-color]="swatch"
+        [disabled]="saving() || isColorTaken(swatch)"
+        [attr.aria-label]="swatch"
+        [attr.title]="isColorTaken(swatch) ? 'Ya usado por otra categoría' : swatch"
+        (click)="colorValue.set(swatch)"
+      ></button>
+    }
+  </div>
+
+  @if (formError()) {
+    <p-message severity="error" [text]="formError()!" styleClass="w-full mt-4" />
+  }
+
+  <div class="flex justify-end gap-2 mt-5">
+    <p-button
+      label="Cancelar"
+      severity="secondary"
+      [outlined]="true"
+      [disabled]="saving()"
+      (onClick)="formVisible.set(false)"
+    />
+    <p-button label="Guardar" [loading]="saving()" (onClick)="save()" />
+  </div>
+</p-dialog>
+
+<p-dialog
+  header="Eliminar categoría"
+  [visible]="deleteTarget() !== null"
+  (visibleChange)="onDeleteDialogVisibleChange($event)"
+  [modal]="true"
+  [closable]="!deleting()"
+  [dismissableMask]="!deleting()"
+  [draggable]="false"
+  [resizable]="false"
+  [style]="{ width: '26rem' }"
+>
+  @if (deleteTarget(); as target) {
+    <p class="text-sm text-surface-600 dark:text-surface-300">
+      ¿Eliminar la categoría
+      <span class="font-semibold text-surface-900 dark:text-surface-0">{{ target.name }}</span>
+      ? Los movimientos que la tenían asignada volverán a mostrar la categoría detectada
+      automáticamente.
+    </p>
+
+    <div class="flex justify-end gap-2 mt-5">
+      <p-button
+        label="Cancelar"
+        severity="secondary"
+        [outlined]="true"
+        [disabled]="deleting()"
+        (onClick)="deleteTarget.set(null)"
+      />
+      <p-button label="Eliminar" severity="danger" [loading]="deleting()" (onClick)="confirmDelete()" />
+    </div>
+  }
+</p-dialog>

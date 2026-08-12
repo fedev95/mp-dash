@@ -12,6 +12,15 @@ export interface StatementTransaction {
   referenceId: string;
   netAmount: number;
   partialBalance: number;
+  /** User-assigned category id, overriding the automatic detection from `transactionType`. */
+  categoryId?: string;
+  /** Free-text note the user attached to this transaction. */
+  note?: string;
+}
+
+/** A transaction as read back from Firestore, addressable by its stable position in the array. */
+export interface IndexedTransaction extends StatementTransaction {
+  id: number;
 }
 
 export interface AccountStatement {
@@ -33,5 +42,5 @@ export interface StatementRecord {
 
 /** A single statement record with its full list of transactions. */
 export interface StatementDetail extends StatementRecord {
-  transactions: StatementTransaction[];
+  transactions: IndexedTransaction[];
 }

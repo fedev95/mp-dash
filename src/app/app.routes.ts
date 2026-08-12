@@ -28,6 +28,11 @@ export const routes: Routes = [
           import('./features/documents/upload/upload').then((m) => m.Upload),
       },
       {
+        path: 'categories',
+        loadComponent: () =>
+          import('./features/categories/list/categories-list').then((m) => m.CategoriesList),
+      },
+      {
         path: 'statements',
         loadComponent: () =>
           import('./features/statements/list/statements-list').then((m) => m.StatementsList),
@@ -44,6 +49,13 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./features/statements/detail/transactions-list').then(
             (m) => m.TransactionsList,
+          ),
+      },
+      {
+        path: 'statements/:id/transactions/:txId',
+        loadComponent: () =>
+          import('./features/statements/transaction-detail/transaction-detail').then(
+            (m) => m.TransactionDetail,
           ),
       },
     ],

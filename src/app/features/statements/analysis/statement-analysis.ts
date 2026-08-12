@@ -5,7 +5,9 @@ import { ButtonModule } from 'primeng/button';
 import { MessageModule } from 'primeng/message';
 import { ChartModule } from 'primeng/chart';
 import { StatementsService } from '../../../core/services/statements.service';
-import { StatementDetail } from '../../../core/models/account-statement.model';
+import { CategoriesService } from '../../../core/services/categories.service';
+import { IndexedTransaction, StatementDetail } from '../../../core/models/account-statement.model';
+import { Category } from '../../../core/models/category.model';
 import { ArsCurrencyPipe } from '../../../core/pipes/ars-currency.pipe';
 import { formatPeriod } from '../../../core/utils/format-period';
 import { categorizeTransaction } from '../../../core/utils/transaction-category';
@@ -36,9 +38,11 @@ export class StatementAnalysis implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly statementsService = inject(StatementsService);
+  private readonly categoriesService = inject(CategoriesService);
   private readonly destroyRef = inject(DestroyRef);
 
   readonly statement = signal<StatementDetail | null>(null);
+  readonly categories = signal<Category[]>([]);
   readonly loading = signal(true);
   readonly errorMessage = signal<string | null>(null);
   readonly deleteDialogVisible = signal(false);
@@ -106,21 +110,23 @@ export class StatementAnalysis implements OnInit {
 
   readonly expenseBreakdownChartData = computed(() => {
     const theme = this.theme();
-    const byCategory = new Map<string, number>();
+    const byKey = new Map<string, { label: string; color: string; total: number }>();
     for (const t of this.sortedTransactions()) {
       if (t.netAmount >= 0) {
         continue;
       }
-      const category = categorizeTransaction(t.transactionType);
-      byCategory.set(category, (byCategory.get(category) ?? 0) + Math.abs(t.netAmount));
+      const { key, label, color } = this.effectiveCategory(t, theme);
+      const entry = byKey.get(key) ?? { label, color, total: 0 };
+      entry.total += Math.abs(t.netAmount);
+      byKey.set(key, entry);
     }
-    const categories = [...byCategory.keys()];
+    const entries = [...byKey.values()];
     return {
-      labels: categories,
+      labels: entries.map((e) => e.label),
       datasets: [
         {
-          data: categories.map((c) => byCategory.get(c)!),
-          backgroundColor: categories.map((c) => categoryColor(theme, c)),
+          data: entries.map((e) => e.total),
+          backgroundColor: entries.map((e) => e.color),
           borderColor: theme.surface,
           borderWidth: 2,
         },
@@ -153,6 +159,24 @@ export class StatementAnalysis implements OnInit {
     return this.expenseBreakdownChartData().labels.length > 0;
   }
 
+  private effectiveCategory(
+    t: IndexedTransaction,
+    theme: ReturnType<typeof getChartTheme>,
+  ): { key: string; label: string; color: string } {
+    if (t.categoryId) {
+      const match = this.categories().find((c) => c.id === t.categoryId);
+      if (match) {
+        return { key: match.id, label: match.name, color: match.color };
+      }
+    }
+    const label = categorizeTransaction(t.transactionType);
+    const autoMatch = this.categories().find((c) => c.name === label);
+    if (autoMatch) {
+      return { key: autoMatch.id, label: autoMatch.name, color: autoMatch.color };
+    }
+    return { key: `auto:${label}`, label, color: categoryColor(theme, label) };
+  }
+
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id');
     if (!id) {
@@ -172,7 +196,12 @@ export class StatementAnalysis implements OnInit {
     this.loading.set(true);
     this.errorMessage.set(null);
     try {
-      this.statement.set(await this.statementsService.getStatementById(id));
+      const [statement, categories] = await Promise.all([
+        this.statementsService.getStatementById(id),
+        this.categoriesService.listCategories(),
+      ]);
+      this.statement.set(statement);
+      this.categories.set(categories);
     } catch (err) {
       this.errorMessage.set(err instanceof Error ? err.message : 'Ocurrió un error inesperado.');
     } finally {

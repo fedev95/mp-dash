@@ -23,42 +23,77 @@
 
   <div class="flex-1 min-h-0">
     <p-table
-      [value]="statement()?.transactions ?? []"
+      [value]="rows()"
       [loading]="loading()"
+      [stripedRows]="true"
       scrollable
       scrollHeight="flex"
       sortField="releaseDate"
       [sortOrder]="1"
       styleClass="h-full"
-      [tableStyle]="{ 'min-width': '50rem' }"
+      [tableStyle]="{ 'min-width': '55rem' }"
     >
       <ng-template pTemplate="header">
         <tr>
           <th pSortableColumn="releaseDate">Fecha <p-sortIcon field="releaseDate" /></th>
-          <th pSortableColumn="transactionType">Tipo <p-sortIcon field="transactionType" /></th>
+          <th pSortableColumn="categoryLabel">Categoría <p-sortIcon field="categoryLabel" /></th>
           <th pSortableColumn="referenceId">Referencia <p-sortIcon field="referenceId" /></th>
           <th pSortableColumn="netAmount">Monto neto <p-sortIcon field="netAmount" /></th>
           <th pSortableColumn="partialBalance">
             Saldo parcial <p-sortIcon field="partialBalance" />
           </th>
+          <th style="width: 3rem"></th>
         </tr>
       </ng-template>
       <ng-template pTemplate="body" let-tx>
-        <tr>
+        <tr
+          class="cursor-pointer hover:bg-surface-50 dark:hover:bg-surface-800"
+          (click)="openTransaction(tx)"
+        >
           <td>{{ tx.releaseDate | isoDate }}</td>
-          <td>{{ tx.transactionType }}</td>
+          <td>
+            <div class="flex items-center gap-2">
+              <span
+                class="inline-block w-2.5 h-2.5 rounded-full shrink-0 bg-surface-400 dark:bg-surface-500"
+                [style.background-color]="tx.categoryColorValue"
+              ></span>
+              <div class="leading-tight">
+                <p>{{ tx.categoryLabel }}</p>
+                <p class="text-xs text-surface-400 dark:text-surface-500">{{ tx.transactionType }}</p>
+              </div>
+            </div>
+          </td>
           <td>{{ tx.referenceId }}</td>
-          <td>{{ tx.netAmount | arsCurrency }}</td>
+          <td [class]="tx.netAmount | amountClass">{{ tx.netAmount | arsCurrency }}</td>
           <td>{{ tx.partialBalance | arsCurrency }}</td>
+          <td class="text-center">
+            @if (tx.note) {
+              <button
+                type="button"
+                class="text-primary-500 hover:text-primary-600"
+                aria-label="Ver nota"
+                (click)="openNote(tx, $event)"
+              >
+                <i class="pi pi-comment"></i>
+              </button>
+            }
+          </td>
         </tr>
       </ng-template>
       <ng-template pTemplate="emptymessage">
         <tr>
-          <td colspan="5" class="text-center text-surface-400 dark:text-surface-500 py-10">
+          <td colspan="6" class="text-center text-surface-400 dark:text-surface-500 py-10">
             Este resumen no tiene movimientos.
           </td>
         </tr>
       </ng-template>
     </p-table>
   </div>
+
+  <app-note-dialog
+    [statementId]="statement()?.id ?? ''"
+    [transaction]="noteTarget()"
+    [(visible)]="noteDialogVisible"
+    (updated)="onNoteUpdated($event)"
+  />
 </div>

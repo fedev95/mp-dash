@@ -1,7 +1,22 @@
 import { Injectable, inject } from '@angular/core';
 import { Auth } from '@angular/fire/auth';
-import { Firestore, addDoc, collection, deleteDoc, doc, getDoc, getDocs } from '@angular/fire/firestore/lite';
-import { AccountStatement, StatementDetail, StatementRecord } from '../models/account-statement.model';
+import {
+  Firestore,
+  addDoc,
+  collection,
+  deleteDoc,
+  doc,
+  getDoc,
+  getDocs,
+  updateDoc,
+} from '@angular/fire/firestore/lite';
+import {
+  AccountStatement,
+  IndexedTransaction,
+  StatementDetail,
+  StatementRecord,
+  StatementTransaction,
+} from '../models/account-statement.model';
 
 @Injectable({ providedIn: 'root' })
 export class StatementsService {
@@ -55,8 +70,10 @@ export class StatementsService {
       throw new Error('No se encontró el resumen solicitado.');
     }
 
-    const data = snapshot.data() as Omit<StatementDetail, 'id'>;
-    return { id: snapshot.id, ...data };
+    const data = snapshot.data() as Omit<StatementDetail, 'id' | 'transactions'> & {
+      transactions: StatementTransaction[];
+    };
+    return { id: snapshot.id, ...data, transactions: withStableIds(data.transactions) };
   }
 
   /** Permanently deletes a statement owned by the current user. */
@@ -69,4 +86,45 @@ export class StatementsService {
     const docRef = doc(this.firestore, 'users', user.uid, 'statements', id);
     await deleteDoc(docRef);
   }
+
+  /** Patches a single transaction (category/note) by its stable index within the statement. */
+  async updateTransaction(
+    statementId: string,
+    index: number,
+    patch: Partial<Pick<StatementTransaction, 'categoryId' | 'note'>>,
+  ): Promise<IndexedTransaction[]> {
+    const user = this.auth.currentUser;
+    if (!user) {
+      throw new Error('No hay un usuario autenticado.');
+    }
+
+    const docRef = doc(this.firestore, 'users', user.uid, 'statements', statementId);
+    const snapshot = await getDoc(docRef);
+    if (!snapshot.exists()) {
+      throw new Error('No se encontró el resumen solicitado.');
+    }
+
+    const data = snapshot.data() as { transactions: StatementTransaction[] };
+    const transactions = data.transactions.map((t, i) => {
+      if (i !== index) {
+        return t;
+      }
+      const updated: StatementTransaction = { ...t, ...patch };
+      if (!updated.categoryId) {
+        delete updated.categoryId;
+      }
+      if (!updated.note) {
+        delete updated.note;
+      }
+      return updated;
+    });
+
+    await updateDoc(docRef, { transactions });
+    return withStableIds(transactions);
+  }
+}
+
+/** Stamps each transaction with its array position, giving it a stable id to address edits by. */
+function withStableIds(transactions: StatementTransaction[]): IndexedTransaction[] {
+  return transactions.map((t, i) => ({ ...t, id: i }));
 }

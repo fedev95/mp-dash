@@ -13,6 +13,7 @@ export class Sidebar {
     { label: 'Dashboard', icon: 'pi pi-home', path: '/' },
     { label: 'Cargar resúmenes', icon: 'pi pi-upload', path: '/documents' },
     { label: 'Resúmenes cargados', icon: 'pi pi-list', path: '/statements' },
+    { label: 'Categorías', icon: 'pi pi-tags', path: '/categories' },
   ];
 
   readonly collapsed = signal(localStorage.getItem(STORAGE_KEY) === '1');

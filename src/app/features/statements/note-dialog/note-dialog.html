@@ -1,0 +1,52 @@
+<p-dialog
+  header="Nota del movimiento"
+  [visible]="visible()"
+  (visibleChange)="visible.set($event)"
+  [modal]="true"
+  [closable]="!saving()"
+  [dismissableMask]="!saving()"
+  [draggable]="false"
+  [resizable]="false"
+  [style]="{ width: '26rem' }"
+>
+  @if (transaction(); as tx) {
+    <textarea
+      pTextarea
+      [autoResize]="true"
+      rows="2"
+      class="w-full resize-none max-h-40 overflow-y-auto"
+      placeholder="Agregá una nota para este movimiento…"
+      [ngModel]="noteValue()"
+      (ngModelChange)="noteValue.set($event)"
+      [disabled]="saving()"
+    ></textarea>
+
+    @if (errorMessage()) {
+      <p-message severity="error" [text]="errorMessage()!" styleClass="w-full mt-3" />
+    }
+
+    <div class="flex justify-between gap-2 mt-5">
+      @if (tx.note) {
+        <p-button
+          label="Eliminar nota"
+          severity="danger"
+          [outlined]="true"
+          [disabled]="saving()"
+          (onClick)="removeNote()"
+        />
+      } @else {
+        <span></span>
+      }
+      <div class="flex gap-2">
+        <p-button
+          label="Cancelar"
+          severity="secondary"
+          [outlined]="true"
+          [disabled]="saving()"
+          (onClick)="visible.set(false)"
+        />
+        <p-button label="Guardar" [loading]="saving()" (onClick)="save()" />
+      </div>
+    </div>
+  }
+</p-dialog>
