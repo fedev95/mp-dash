@@ -24,10 +24,15 @@
   } @else {
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
       <p-card>
-        <p class="text-sm text-surface-500 dark:text-surface-400">Saldo actual</p>
+        <p class="text-sm text-surface-500 dark:text-surface-400">Saldo del último resumen</p>
         <p class="text-xl font-semibold" [class]="latestBalance() | amountClass: false">
           {{ latestBalance() | arsCurrency }}
         </p>
+        @if (latestStatement(); as s) {
+          <p class="text-xs text-surface-400 dark:text-surface-500 mt-0.5">
+            {{ formatPeriod(s) }}
+          </p>
+        }
       </p-card>
       <p-card>
         <p class="text-sm text-surface-500 dark:text-surface-400">
