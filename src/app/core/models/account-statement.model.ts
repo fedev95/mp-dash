@@ -14,6 +14,8 @@ export interface StatementTransaction {
   partialBalance: number;
   /** User-assigned category id, overriding the automatic detection from `transactionType`. */
   categoryId?: string;
+  /** How `categoryId` was set: picked by hand, or applied by a category rule. */
+  categorySource?: 'manual' | 'rule';
   /** Free-text note the user attached to this transaction. */
   note?: string;
 }

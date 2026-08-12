@@ -17,27 +17,36 @@ import {
   StatementRecord,
   StatementTransaction,
 } from '../models/account-statement.model';
+import { CategoryRulesService } from './category-rules.service';
+import { findRuleFor, normalizeTransactionType } from '../utils/category-rules.util';
 
 @Injectable({ providedIn: 'root' })
 export class StatementsService {
   private readonly firestore = inject(Firestore);
   private readonly auth = inject(Auth);
+  private readonly categoryRulesService = inject(CategoryRulesService);
 
-  /** Uploads a parsed statement to Firestore under the current user's own subcollection. */
+  /** Uploads a parsed statement to Firestore, auto-categorizing transactions that match a rule. */
   async uploadStatement(fileName: string, statement: AccountStatement): Promise<string> {
     const user = this.auth.currentUser;
     if (!user) {
       throw new Error('No hay un usuario autenticado.');
     }
 
+    const rules = await this.categoryRulesService.listRules();
+    const transactions = statement.transactions.map((t) => {
+      const rule = findRuleFor(t.transactionType, rules);
+      return rule ? { ...t, categoryId: rule.categoryId, categorySource: 'rule' as const } : t;
+    });
+
     const statementsRef = collection(this.firestore, 'users', user.uid, 'statements');
     const docRef = await addDoc(statementsRef, {
       fileName,
       uploadedAt: new Date().toISOString(),
-      periodStart: statement.transactions[0]?.releaseDate ?? null,
-      periodEnd: statement.transactions.at(-1)?.releaseDate ?? null,
+      periodStart: transactions[0]?.releaseDate ?? null,
+      periodEnd: transactions.at(-1)?.releaseDate ?? null,
       summary: statement.summary,
-      transactions: statement.transactions,
+      transactions,
     });
     return docRef.id;
   }
@@ -101,7 +110,7 @@ export class StatementsService {
   async updateTransaction(
     statementId: string,
     index: number,
-    patch: Partial<Pick<StatementTransaction, 'categoryId' | 'note'>>,
+    patch: Partial<Pick<StatementTransaction, 'categoryId' | 'note' | 'categorySource'>>,
   ): Promise<IndexedTransaction[]> {
     const user = this.auth.currentUser;
     if (!user) {
@@ -122,6 +131,7 @@ export class StatementsService {
       const updated: StatementTransaction = { ...t, ...patch };
       if (!updated.categoryId) {
         delete updated.categoryId;
+        delete updated.categorySource;
       }
       if (!updated.note) {
         delete updated.note;
@@ -132,9 +142,61 @@ export class StatementsService {
     await updateDoc(docRef, { transactions });
     return withStableIds(transactions);
   }
+
+  /** Applies `categoryId` to every transaction (in any statement) matching `transactionType`. */
+  async applyCategoryToMatchingTransactions(transactionType: string, categoryId: string): Promise<number> {
+    const user = this.auth.currentUser;
+    if (!user) {
+      throw new Error('No hay un usuario autenticado.');
+    }
+
+    const normalized = normalizeTransactionType(transactionType);
+    const records = await this.getStatements();
+    const counts = await Promise.all(
+      records.map(async (record) => {
+        const docRef = doc(this.firestore, 'users', user.uid, 'statements', record.id);
+        const snapshot = await getDoc(docRef);
+        const data = snapshot.data() as { transactions: StatementTransaction[] };
+
+        let changed = 0;
+        const transactions = data.transactions.map((t) => {
+          if (!isRuleApplicable(t, normalized, categoryId)) {
+            return t;
+          }
+          changed += 1;
+          return { ...t, categoryId, categorySource: 'rule' as const };
+        });
+
+        if (changed > 0) {
+          await updateDoc(docRef, { transactions });
+        }
+        return changed;
+      }),
+    );
+
+    return counts.reduce((sum, c) => sum + c, 0);
+  }
 }
 
 /** Stamps each transaction with its array position, giving it a stable id to address edits by. */
 function withStableIds(transactions: StatementTransaction[]): IndexedTransaction[] {
   return transactions.map((t, i) => ({ ...t, id: i }));
+}
+
+/** True if `t` should be (re)assigned `targetCategoryId` by a rule matching `normalizedType`. */
+function isRuleApplicable(
+  t: StatementTransaction,
+  normalizedType: string,
+  targetCategoryId: string,
+): boolean {
+  if (normalizeTransactionType(t.transactionType) !== normalizedType) {
+    return false;
+  }
+  if (t.categoryId === targetCategoryId) {
+    return false;
+  }
+  if (t.categoryId && t.categorySource !== 'rule') {
+    return false;
+  }
+  return true;
 }

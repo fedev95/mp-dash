@@ -93,6 +93,20 @@
           Si no elegís una categoría, se usa la detección automática ({{ autoCategory() }}).
         </p>
 
+        @if (selectedCategoryId()) {
+          <div class="flex items-center gap-2 mt-3">
+            <p-checkbox
+              inputId="applyToAll"
+              [binary]="true"
+              [ngModel]="applyToAll()"
+              (ngModelChange)="applyToAll.set($event)"
+            />
+            <label for="applyToAll" class="text-sm text-surface-600 dark:text-surface-300">
+              Aplicar esta categoría a todos los movimientos con el mismo tipo de operación
+            </label>
+          </div>
+        }
+
         <div class="flex items-center gap-2 mt-6 mb-3 pt-5 border-t border-surface-200 dark:border-surface-700">
           <i class="pi pi-align-left text-primary-500"></i>
           <p class="font-medium text-surface-700 dark:text-surface-300">Nota</p>
@@ -108,7 +122,7 @@
         ></textarea>
 
         @if (saved()) {
-          <p-message severity="success" text="Cambios guardados." styleClass="w-full mt-4" />
+          <p-message severity="success" [text]="successMessage()" styleClass="w-full mt-4" />
         }
 
         <div class="flex justify-end mt-5">

@@ -64,6 +64,49 @@
         </div>
       }
     </p-card>
+
+    <p-card>
+      <p class="text-sm font-medium text-surface-700 dark:text-surface-300">Reglas automáticas</p>
+      <p class="text-xs text-surface-400 dark:text-surface-500 mb-3">
+        Movimientos que se categorizan solos por su tipo de operación
+      </p>
+      @if (ruleRows().length === 0) {
+        <p class="text-surface-400 dark:text-surface-500 text-sm text-center py-6">
+          Todavía no se creó ninguna regla automática. Asignále una categoría a un movimiento y
+          elegí "aplicar a todos" para crear una.
+        </p>
+      } @else {
+        <div class="flex flex-col divide-y divide-surface-200 dark:divide-surface-700">
+          @for (rule of ruleRows(); track rule.id) {
+            <div class="flex items-center justify-between gap-3 py-3 first:pt-0 last:pb-0">
+              <div class="flex items-center gap-3 min-w-0">
+                @if (rule.category) {
+                  <span
+                    class="inline-block w-2.5 h-2.5 rounded-full shrink-0"
+                    [style.background-color]="rule.category.color"
+                  ></span>
+                }
+                <p class="text-sm text-surface-900 dark:text-surface-0 truncate">
+                  <span class="font-medium">{{ rule.category?.name ?? 'Categoría eliminada' }}</span>
+                  <span class="text-surface-400 dark:text-surface-500"> — </span>
+                  <span [attr.title]="rule.transactionType">{{ rule.transactionType }}</span>
+                </p>
+              </div>
+              <p-button
+                icon="pi pi-trash"
+                severity="danger"
+                [text]="true"
+                [rounded]="true"
+                size="small"
+                [loading]="deletingRuleId() === rule.id"
+                ariaLabel="Eliminar regla"
+                (onClick)="deleteRule(rule)"
+              />
+            </div>
+          }
+        </div>
+      }
+    </p-card>
   </div>
 </div>
 

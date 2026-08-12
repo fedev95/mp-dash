@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CardModule } from 'primeng/card';
 import { MessageModule } from 'primeng/message';
@@ -6,7 +6,9 @@ import { ButtonModule } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog';
 import { InputTextModule } from 'primeng/inputtext';
 import { CategoriesService } from '../../../core/services/categories.service';
+import { CategoryRulesService } from '../../../core/services/category-rules.service';
 import { Category } from '../../../core/models/category.model';
+import { CategoryRule } from '../../../core/models/category-rule.model';
 import { CATEGORY_PALETTE, nextAvailableColor } from '../../../core/utils/category-palette';
 
 @Component({
@@ -16,12 +18,15 @@ import { CATEGORY_PALETTE, nextAvailableColor } from '../../../core/utils/catego
 })
 export class CategoriesList implements OnInit {
   private readonly categoriesService = inject(CategoriesService);
+  private readonly categoryRulesService = inject(CategoryRulesService);
 
   readonly palette = CATEGORY_PALETTE;
 
   readonly categories = signal<Category[]>([]);
+  readonly rules = signal<CategoryRule[]>([]);
   readonly loading = signal(true);
   readonly errorMessage = signal<string | null>(null);
+  readonly deletingRuleId = signal<string | null>(null);
 
   readonly formVisible = signal(false);
   readonly editingId = signal<string | null>(null);
@@ -37,15 +42,39 @@ export class CategoriesList implements OnInit {
     this.load();
   }
 
+  readonly ruleRows = computed(() =>
+    this.rules().map((rule) => ({
+      ...rule,
+      category: this.categories().find((c) => c.id === rule.categoryId) ?? null,
+    })),
+  );
+
   async load(): Promise<void> {
     this.loading.set(true);
     this.errorMessage.set(null);
     try {
-      this.categories.set(await this.categoriesService.listCategories());
+      const [categories, rules] = await Promise.all([
+        this.categoriesService.listCategories(),
+        this.categoryRulesService.listRules(),
+      ]);
+      this.categories.set(categories);
+      this.rules.set(rules);
     } catch (err) {
       this.errorMessage.set(err instanceof Error ? err.message : 'Ocurrió un error inesperado.');
     } finally {
       this.loading.set(false);
+    }
+  }
+
+  async deleteRule(rule: CategoryRule): Promise<void> {
+    this.deletingRuleId.set(rule.id);
+    try {
+      await this.categoryRulesService.deleteRule(rule.id);
+      this.rules.update((current) => current.filter((r) => r.id !== rule.id));
+    } catch (err) {
+      this.errorMessage.set(err instanceof Error ? err.message : 'Ocurrió un error inesperado.');
+    } finally {
+      this.deletingRuleId.set(null);
     }
   }
 
