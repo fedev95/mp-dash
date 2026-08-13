@@ -92,6 +92,7 @@ export class Dashboard implements OnInit {
   readonly yearDetailsLoading = signal(false);
   readonly errorMessage = signal<string | null>(null);
   readonly selectedYear = signal(new Date().getFullYear());
+  readonly selectedCategoryKey = signal<string | null>(null);
 
   private readonly isDark = signal(document.documentElement.classList.contains('dark'));
   private readonly theme = computed(() => getChartTheme(this.isDark()));
@@ -287,6 +288,59 @@ export class Dashboard implements OnInit {
     return this.incomeBreakdownChartData().labels.length > 0;
   }
 
+  readonly yearCategoryOptions = computed(() => {
+    const theme = this.theme();
+    const byKey = new Map<string, { label: string; color: string; total: number }>();
+    for (const t of this.yearTransactions()) {
+      const { key, label, color } = this.effectiveCategory(t, theme);
+      const entry = byKey.get(key) ?? { label, color, total: 0 };
+      entry.total += Math.abs(t.netAmount);
+      byKey.set(key, entry);
+    }
+    return [...byKey.entries()]
+      .map(([key, v]) => ({ key, ...v }))
+      .sort((a, b) => b.total - a.total);
+  });
+
+  get hasCategoryTrend(): boolean {
+    return this.yearCategoryOptions().length > 0;
+  }
+
+  readonly categoryTrendChartData = computed(() => {
+    const theme = this.theme();
+    const key = this.selectedCategoryKey();
+    const option = this.yearCategoryOptions().find((o) => o.key === key);
+    const color = option?.color ?? theme.muted;
+
+    const totals = new Array(12).fill(0);
+    for (const t of this.yearTransactions()) {
+      const { key: tKey } = this.effectiveCategory(t, theme);
+      if (tKey !== key) {
+        continue;
+      }
+      const month = periodMonth(t.releaseDate);
+      if (month === null) {
+        continue;
+      }
+      totals[month] += t.netAmount;
+    }
+
+    return {
+      labels: MONTH_LABELS,
+      datasets: [
+        {
+          data: totals,
+          backgroundColor: color,
+          borderRadius: 4,
+          borderSkipped: false,
+          maxBarThickness: 24,
+        },
+      ],
+    };
+  });
+
+  readonly categoryTrendChartOptions = computed(() => this.buildAxisChartOptions());
+
   private effectiveCategory(
     t: IndexedTransaction,
     theme: ReturnType<typeof getChartTheme>,
@@ -343,6 +397,11 @@ export class Dashboard implements OnInit {
         ids.map((id) => this.statementsService.getStatementById(id)),
       );
       this.yearDetails.set(details);
+
+      const options = this.yearCategoryOptions();
+      if (options.length > 0 && !options.some((o) => o.key === this.selectedCategoryKey())) {
+        this.selectedCategoryKey.set(options[0].key);
+      }
     } catch (err) {
       this.errorMessage.set(err instanceof Error ? err.message : 'Ocurrió un error inesperado.');
     } finally {

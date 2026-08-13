@@ -164,6 +164,45 @@
     </div>
 
     <p-card>
+      <div class="flex items-center justify-between gap-3 mb-2 flex-wrap">
+        <p class="text-sm font-medium text-surface-700 dark:text-surface-300">
+          Evolución por categoría ({{ selectedYear() }})
+        </p>
+        @if (hasCategoryTrend) {
+          <div class="flex flex-col gap-1">
+            <label class="text-xs text-surface-500 dark:text-surface-400">Categoría</label>
+            <p-select
+              [options]="yearCategoryOptions()"
+              optionLabel="label"
+              optionValue="key"
+              [ngModel]="selectedCategoryKey()"
+              (ngModelChange)="selectedCategoryKey.set($event)"
+              size="small"
+              styleClass="w-48"
+            />
+          </div>
+        }
+      </div>
+
+      @if (yearDetailsLoading()) {
+        <p class="text-surface-400 dark:text-surface-500 text-sm text-center py-10">Cargando…</p>
+      } @else if (hasCategoryTrend) {
+        <div class="h-96">
+          <p-chart
+            type="bar"
+            [data]="categoryTrendChartData()"
+            [options]="categoryTrendChartOptions()"
+            class="h-full"
+          />
+        </div>
+      } @else {
+        <p class="text-surface-400 dark:text-surface-500 text-sm text-center py-10">
+          Sin movimientos categorizados este año.
+        </p>
+      }
+    </p-card>
+
+    <p-card>
       <p class="text-sm font-medium text-surface-700 dark:text-surface-300 mb-3">
         Últimos resúmenes
       </p>
