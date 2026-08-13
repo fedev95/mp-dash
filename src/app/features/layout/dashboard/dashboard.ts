@@ -217,19 +217,32 @@ export class Dashboard implements OnInit {
 
   readonly balanceChartOptions = computed(() => this.buildAxisChartOptions());
 
-  readonly expenseBreakdownChartData = computed(() => {
-    const theme = this.theme();
+  private readonly yearTransactions = computed(() =>
+    this.yearDetails().flatMap((d) => d.transactions),
+  );
+
+  readonly expenseBreakdownChartData = computed(() =>
+    this.buildCategoryBreakdown(this.yearTransactions(), this.theme(), (t) => t.netAmount < 0),
+  );
+
+  readonly incomeBreakdownChartData = computed(() =>
+    this.buildCategoryBreakdown(this.yearTransactions(), this.theme(), (t) => t.netAmount > 0),
+  );
+
+  private buildCategoryBreakdown(
+    transactions: IndexedTransaction[],
+    theme: ReturnType<typeof getChartTheme>,
+    predicate: (t: IndexedTransaction) => boolean,
+  ) {
     const byKey = new Map<string, { label: string; color: string; total: number }>();
-    for (const detail of this.yearDetails()) {
-      for (const t of detail.transactions) {
-        if (t.netAmount >= 0) {
-          continue;
-        }
-        const { key, label, color } = this.effectiveCategory(t, theme);
-        const entry = byKey.get(key) ?? { label, color, total: 0 };
-        entry.total += Math.abs(t.netAmount);
-        byKey.set(key, entry);
+    for (const t of transactions) {
+      if (!predicate(t)) {
+        continue;
       }
+      const { key, label, color } = this.effectiveCategory(t, theme);
+      const entry = byKey.get(key) ?? { label, color, total: 0 };
+      entry.total += Math.abs(t.netAmount);
+      byKey.set(key, entry);
     }
     const entries = [...byKey.values()];
     return {
@@ -243,9 +256,9 @@ export class Dashboard implements OnInit {
         },
       ],
     };
-  });
+  }
 
-  readonly expenseBreakdownChartOptions = computed(() => {
+  readonly categoryBreakdownChartOptions = computed(() => {
     const theme = this.theme();
     return {
       responsive: true,
@@ -268,6 +281,10 @@ export class Dashboard implements OnInit {
 
   get hasExpenseBreakdown(): boolean {
     return this.expenseBreakdownChartData().labels.length > 0;
+  }
+
+  get hasIncomeBreakdown(): boolean {
+    return this.incomeBreakdownChartData().labels.length > 0;
   }
 
   private effectiveCategory(

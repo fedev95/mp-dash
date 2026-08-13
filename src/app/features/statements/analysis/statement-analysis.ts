@@ -142,11 +142,22 @@ export class StatementAnalysis implements OnInit {
 
   readonly dailyFlowChartOptions = computed(() => this.buildAxisChartOptions());
 
-  readonly expenseBreakdownChartData = computed(() => {
-    const theme = this.theme();
+  readonly expenseBreakdownChartData = computed(() =>
+    this.buildCategoryBreakdown(this.sortedTransactions(), this.theme(), (t) => t.netAmount < 0),
+  );
+
+  readonly incomeBreakdownChartData = computed(() =>
+    this.buildCategoryBreakdown(this.sortedTransactions(), this.theme(), (t) => t.netAmount > 0),
+  );
+
+  private buildCategoryBreakdown(
+    transactions: IndexedTransaction[],
+    theme: ReturnType<typeof getChartTheme>,
+    predicate: (t: IndexedTransaction) => boolean,
+  ) {
     const byKey = new Map<string, { label: string; color: string; total: number }>();
-    for (const t of this.sortedTransactions()) {
-      if (t.netAmount >= 0) {
+    for (const t of transactions) {
+      if (!predicate(t)) {
         continue;
       }
       const { key, label, color } = this.effectiveCategory(t, theme);
@@ -166,9 +177,9 @@ export class StatementAnalysis implements OnInit {
         },
       ],
     };
-  });
+  }
 
-  readonly expenseBreakdownChartOptions = computed(() => {
+  readonly categoryBreakdownChartOptions = computed(() => {
     const theme = this.theme();
     return {
       responsive: true,
@@ -191,6 +202,10 @@ export class StatementAnalysis implements OnInit {
 
   get hasExpenseBreakdown(): boolean {
     return this.expenseBreakdownChartData().labels.length > 0;
+  }
+
+  get hasIncomeBreakdown(): boolean {
+    return this.incomeBreakdownChartData().labels.length > 0;
   }
 
   private effectiveCategory(

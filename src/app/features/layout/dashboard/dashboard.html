@@ -102,7 +102,7 @@
       </div>
     </p-card>
 
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 items-start">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 items-start">
       <p-card>
         <p class="text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">
           Evolución del saldo
@@ -120,6 +120,28 @@
 
       <p-card>
         <p class="text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">
+          Ingresos por categoría ({{ selectedYear() }})
+        </p>
+        @if (yearDetailsLoading()) {
+          <p class="text-surface-400 dark:text-surface-500 text-sm text-center py-10">Cargando…</p>
+        } @else if (hasIncomeBreakdown) {
+          <div class="h-96">
+            <p-chart
+              type="doughnut"
+              [data]="incomeBreakdownChartData()"
+              [options]="categoryBreakdownChartOptions()"
+              class="h-full"
+            />
+          </div>
+        } @else {
+          <p class="text-surface-400 dark:text-surface-500 text-sm text-center py-10">
+            Sin ingresos este año.
+          </p>
+        }
+      </p-card>
+
+      <p-card>
+        <p class="text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">
           Gastos por categoría ({{ selectedYear() }})
         </p>
         @if (yearDetailsLoading()) {
@@ -129,7 +151,7 @@
             <p-chart
               type="doughnut"
               [data]="expenseBreakdownChartData()"
-              [options]="expenseBreakdownChartOptions()"
+              [options]="categoryBreakdownChartOptions()"
               class="h-full"
             />
           </div>
