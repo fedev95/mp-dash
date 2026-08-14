@@ -1,5 +1,6 @@
-import { Component, signal } from '@angular/core';
-import { RouterLink, RouterLinkActive } from '@angular/router';
+import { Component, inject, signal } from '@angular/core';
+import { Router, RouterLink, RouterLinkActive } from '@angular/router';
+import { AuthService } from '../../../core/services/auth.service';
 
 const STORAGE_KEY = 'sidebar-collapsed';
 
@@ -9,6 +10,11 @@ const STORAGE_KEY = 'sidebar-collapsed';
   templateUrl: './sidebar.html',
 })
 export class Sidebar {
+  private readonly auth = inject(AuthService);
+  private readonly router = inject(Router);
+
+  readonly currentUser = this.auth.currentUser;
+
   readonly links = [
     { label: 'Dashboard', icon: 'pi pi-home', path: '/' },
     { label: 'Movimientos', icon: 'pi pi-search', path: '/movements' },
@@ -23,5 +29,10 @@ export class Sidebar {
     const next = !this.collapsed();
     this.collapsed.set(next);
     localStorage.setItem(STORAGE_KEY, next ? '1' : '0');
+  }
+
+  async logout(): Promise<void> {
+    await this.auth.logout();
+    await this.router.navigate(['/login']);
   }
 }

@@ -3,29 +3,29 @@
   [class.w-64]="!collapsed()"
   [class.w-16]="collapsed()"
 >
-  <div class="flex items-center p-2" [class.justify-start]="!collapsed()" [class.justify-center]="collapsed()">
-    <button
-      type="button"
-      (click)="toggle()"
-      class="flex items-center justify-center w-8 h-8 shrink-0 rounded-lg text-surface-500 dark:text-surface-400 hover:bg-surface-100 dark:hover:bg-surface-800 transition-colors"
-      [attr.aria-label]="collapsed() ? 'Expandir menú' : 'Contraer menú'"
+  <button
+    type="button"
+    (click)="toggle()"
+    class="flex items-center w-full px-5 py-3 gap-3 shrink-0 border-b border-surface-200 dark:border-surface-700 hover:bg-surface-100 dark:hover:bg-surface-800 transition-colors"
+    [attr.aria-label]="collapsed() ? 'Expandir menú' : 'Contraer menú'"
+    [title]="collapsed() ? 'Expandir menú' : 'Contraer menú'"
+  >
+    <i class="pi pi-th-large text-primary-500 w-5 shrink-0 text-center"></i>
+    <span
+      class="font-semibold text-base text-surface-900 dark:text-surface-0 whitespace-nowrap overflow-hidden transition-all duration-300"
+      [class.opacity-0]="collapsed()"
+      [class.w-0]="collapsed()"
+      >MP Dashboard</span
     >
-      <i
-        class="pi flex items-center justify-center"
-        [class.pi-angle-right]="collapsed()"
-        [class.pi-angle-left]="!collapsed()"
-      ></i>
-    </button>
-  </div>
+  </button>
 
-  <nav class="flex flex-col gap-1 px-2 pb-4">
+  <nav class="flex flex-col gap-1 px-2 py-2 flex-1">
     @for (link of links; track link.path) {
       <a
         [routerLink]="link.path"
         routerLinkActive="bg-primary-50 text-primary-600 dark:bg-primary-500/10 dark:text-primary-300"
         [routerLinkActiveOptions]="{ exact: true }"
         [title]="collapsed() ? link.label : ''"
-        [class.justify-center]="collapsed()"
         [class.gap-3]="!collapsed()"
         class="flex items-center px-3 py-2 rounded-lg text-surface-600 dark:text-surface-300 hover:bg-surface-100 dark:hover:bg-surface-800 transition-colors"
       >
@@ -39,4 +39,37 @@
       </a>
     }
   </nav>
+
+  <div class="flex flex-col gap-1 px-2 py-2 border-t border-surface-200 dark:border-surface-700 shrink-0">
+    @if (currentUser()?.email) {
+      <div
+        class="flex items-center px-3 py-2"
+        [class.gap-3]="!collapsed()"
+        [title]="collapsed() ? currentUser()?.email ?? '' : ''"
+      >
+        <i class="pi pi-user w-5 shrink-0 text-center text-surface-400 dark:text-surface-500"></i>
+        <span
+          class="text-xs text-surface-500 dark:text-surface-400 truncate whitespace-nowrap overflow-hidden transition-all duration-300"
+          [class.opacity-0]="collapsed()"
+          [class.w-0]="collapsed()"
+          >{{ currentUser()?.email }}</span
+        >
+      </div>
+    }
+    <button
+      type="button"
+      (click)="logout()"
+      [title]="collapsed() ? 'Salir' : ''"
+      [class.gap-3]="!collapsed()"
+      class="flex items-center px-3 py-2 rounded-lg text-surface-600 dark:text-surface-300 hover:bg-surface-100 dark:hover:bg-surface-800 transition-colors"
+    >
+      <i class="pi pi-sign-out w-5 shrink-0 text-center"></i>
+      <span
+        class="text-sm font-medium whitespace-nowrap overflow-hidden transition-all duration-300"
+        [class.opacity-0]="collapsed()"
+        [class.w-0]="collapsed()"
+        >Salir</span
+      >
+    </button>
+  </div>
 </aside>
