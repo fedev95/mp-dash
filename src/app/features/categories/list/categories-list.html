@@ -1,112 +1,125 @@
-<div class="h-full overflow-y-auto p-6">
-  <div class="max-w-2xl mx-auto flex flex-col gap-4">
-    <div class="flex items-start justify-between gap-4">
-      <div>
-        <h1 class="text-2xl font-semibold text-surface-900 dark:text-surface-0">Categorías</h1>
-        <p class="text-surface-500 dark:text-surface-400 text-sm">
-          Categorías propias para clasificar tus movimientos
-        </p>
-      </div>
-
-      <p-button label="Nueva categoría" icon="pi pi-plus" (onClick)="openCreate()" />
+<div class="h-full flex flex-col p-6 gap-4 overflow-hidden">
+  <div class="flex items-start justify-between gap-4 shrink-0">
+    <div>
+      <h1 class="text-2xl font-semibold text-surface-900 dark:text-surface-0">Categorías</h1>
+      <p class="text-surface-500 dark:text-surface-400 text-sm">
+        Categorías propias para clasificar tus movimientos
+      </p>
     </div>
 
-    @if (errorMessage()) {
-      <p-message severity="error" [text]="errorMessage()!" styleClass="w-full" />
-    }
+    <p-button label="Nueva categoría" icon="pi pi-plus" (onClick)="openCreate()" />
+  </div>
 
-    <p-card>
-      @if (loading()) {
-        <p class="text-surface-400 dark:text-surface-500 text-sm text-center py-10">
-          Cargando categorías…
-        </p>
-      } @else if (categories().length === 0) {
-        <div class="flex flex-col items-center gap-2 text-center py-10">
-          <i class="pi pi-tags text-3xl text-surface-300 dark:text-surface-600"></i>
-          <p class="text-surface-400 dark:text-surface-500 text-sm">
-            Todavía no creaste ninguna categoría.
+  @if (errorMessage()) {
+    <p-message severity="error" [text]="errorMessage()!" styleClass="w-full shrink-0" />
+  }
+
+  <div class="flex-1 min-h-0 grid grid-cols-1 md:grid-cols-2 grid-rows-2 md:grid-rows-1 gap-4">
+    <div
+      class="flex flex-col min-h-0 rounded-xl shadow-sm bg-white dark:bg-surface-900 overflow-hidden"
+    >
+      <p class="shrink-0 px-5 pt-5 pb-3 text-sm font-medium text-surface-700 dark:text-surface-300">
+        Tus categorías
+      </p>
+      <div class="flex-1 min-h-0 overflow-y-auto px-5 pb-5">
+        @if (loading()) {
+          <p class="text-surface-400 dark:text-surface-500 text-sm text-center py-10">
+            Cargando categorías…
           </p>
-        </div>
-      } @else {
-        <div class="flex flex-col divide-y divide-surface-200 dark:divide-surface-700">
-          @for (category of categories(); track category.id) {
-            <div class="flex items-center justify-between gap-3 py-3 first:pt-0 last:pb-0">
-              <div class="flex items-center gap-3 min-w-0">
-                <span
-                  class="inline-block w-3.5 h-3.5 rounded-full shrink-0"
-                  [style.background-color]="category.color"
-                ></span>
-                <p class="font-medium text-surface-900 dark:text-surface-0 truncate">
-                  {{ category.name }}
-                </p>
+        } @else if (categories().length === 0) {
+          <div class="flex flex-col items-center gap-2 text-center py-10">
+            <i class="pi pi-tags text-3xl text-surface-300 dark:text-surface-600"></i>
+            <p class="text-surface-400 dark:text-surface-500 text-sm">
+              Todavía no creaste ninguna categoría.
+            </p>
+          </div>
+        } @else {
+          <div class="flex flex-col divide-y divide-surface-200 dark:divide-surface-700">
+            @for (category of categories(); track category.id) {
+              <div class="flex items-center justify-between gap-3 py-3 first:pt-0 last:pb-0">
+                <div class="flex items-center gap-3 min-w-0">
+                  <span
+                    class="inline-block w-3.5 h-3.5 rounded-full shrink-0"
+                    [style.background-color]="category.color"
+                  ></span>
+                  <p class="font-medium text-surface-900 dark:text-surface-0 truncate">
+                    {{ category.name }}
+                  </p>
+                </div>
+                <div class="flex items-center gap-1 shrink-0">
+                  <p-button
+                    icon="pi pi-pencil"
+                    [text]="true"
+                    [rounded]="true"
+                    size="small"
+                    ariaLabel="Editar categoría"
+                    (onClick)="openEdit(category)"
+                  />
+                  <p-button
+                    icon="pi pi-trash"
+                    severity="danger"
+                    [text]="true"
+                    [rounded]="true"
+                    size="small"
+                    ariaLabel="Eliminar categoría"
+                    (onClick)="requestDelete(category)"
+                  />
+                </div>
               </div>
-              <div class="flex items-center gap-1 shrink-0">
-                <p-button
-                  icon="pi pi-pencil"
-                  [text]="true"
-                  [rounded]="true"
-                  size="small"
-                  ariaLabel="Editar categoría"
-                  (onClick)="openEdit(category)"
-                />
+            }
+          </div>
+        }
+      </div>
+    </div>
+
+    <div
+      class="flex flex-col min-h-0 rounded-xl shadow-sm bg-white dark:bg-surface-900 overflow-hidden"
+    >
+      <div class="shrink-0 px-5 pt-5 pb-3">
+        <p class="text-sm font-medium text-surface-700 dark:text-surface-300">Reglas automáticas</p>
+        <p class="text-xs text-surface-400 dark:text-surface-500">
+          Movimientos que se categorizan solos por su tipo de operación
+        </p>
+      </div>
+      <div class="flex-1 min-h-0 overflow-y-auto px-5 pb-5">
+        @if (ruleRows().length === 0) {
+          <p class="text-surface-400 dark:text-surface-500 text-sm text-center py-6">
+            Todavía no se creó ninguna regla automática. Asignále una categoría a un movimiento y
+            elegí "aplicar a todos" para crear una.
+          </p>
+        } @else {
+          <div class="flex flex-col divide-y divide-surface-200 dark:divide-surface-700">
+            @for (rule of ruleRows(); track rule.id) {
+              <div class="flex items-center justify-between gap-3 py-3 first:pt-0 last:pb-0">
+                <div class="flex items-center gap-3 min-w-0">
+                  @if (rule.category) {
+                    <span
+                      class="inline-block w-2.5 h-2.5 rounded-full shrink-0"
+                      [style.background-color]="rule.category.color"
+                    ></span>
+                  }
+                  <p class="text-sm text-surface-900 dark:text-surface-0 truncate">
+                    <span class="font-medium">{{ rule.category?.name ?? 'Categoría eliminada' }}</span>
+                    <span class="text-surface-400 dark:text-surface-500"> — </span>
+                    <span [attr.title]="rule.transactionType">{{ rule.transactionType }}</span>
+                  </p>
+                </div>
                 <p-button
                   icon="pi pi-trash"
                   severity="danger"
                   [text]="true"
                   [rounded]="true"
                   size="small"
-                  ariaLabel="Eliminar categoría"
-                  (onClick)="requestDelete(category)"
+                  [loading]="deletingRuleId() === rule.id"
+                  ariaLabel="Eliminar regla"
+                  (onClick)="deleteRule(rule)"
                 />
               </div>
-            </div>
-          }
-        </div>
-      }
-    </p-card>
-
-    <p-card>
-      <p class="text-sm font-medium text-surface-700 dark:text-surface-300">Reglas automáticas</p>
-      <p class="text-xs text-surface-400 dark:text-surface-500 mb-3">
-        Movimientos que se categorizan solos por su tipo de operación
-      </p>
-      @if (ruleRows().length === 0) {
-        <p class="text-surface-400 dark:text-surface-500 text-sm text-center py-6">
-          Todavía no se creó ninguna regla automática. Asignále una categoría a un movimiento y
-          elegí "aplicar a todos" para crear una.
-        </p>
-      } @else {
-        <div class="flex flex-col divide-y divide-surface-200 dark:divide-surface-700">
-          @for (rule of ruleRows(); track rule.id) {
-            <div class="flex items-center justify-between gap-3 py-3 first:pt-0 last:pb-0">
-              <div class="flex items-center gap-3 min-w-0">
-                @if (rule.category) {
-                  <span
-                    class="inline-block w-2.5 h-2.5 rounded-full shrink-0"
-                    [style.background-color]="rule.category.color"
-                  ></span>
-                }
-                <p class="text-sm text-surface-900 dark:text-surface-0 truncate">
-                  <span class="font-medium">{{ rule.category?.name ?? 'Categoría eliminada' }}</span>
-                  <span class="text-surface-400 dark:text-surface-500"> — </span>
-                  <span [attr.title]="rule.transactionType">{{ rule.transactionType }}</span>
-                </p>
-              </div>
-              <p-button
-                icon="pi pi-trash"
-                severity="danger"
-                [text]="true"
-                [rounded]="true"
-                size="small"
-                [loading]="deletingRuleId() === rule.id"
-                ariaLabel="Eliminar regla"
-                (onClick)="deleteRule(rule)"
-              />
-            </div>
-          }
-        </div>
-      }
-    </p-card>
+            }
+          </div>
+        }
+      </div>
+    </div>
   </div>
 </div>
 

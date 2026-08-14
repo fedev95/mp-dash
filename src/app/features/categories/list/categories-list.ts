@@ -1,6 +1,5 @@
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { CardModule } from 'primeng/card';
 import { MessageModule } from 'primeng/message';
 import { ButtonModule } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog';
@@ -13,7 +12,7 @@ import { CATEGORY_PALETTE, nextAvailableColor } from '../../../core/utils/catego
 
 @Component({
   selector: 'app-categories-list',
-  imports: [CardModule, MessageModule, ButtonModule, DialogModule, InputTextModule, FormsModule],
+  imports: [MessageModule, ButtonModule, DialogModule, InputTextModule, FormsModule],
   templateUrl: './categories-list.html',
 })
 export class CategoriesList implements OnInit {
