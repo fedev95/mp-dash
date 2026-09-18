@@ -184,7 +184,8 @@ export class StatementAnalysis implements OnInit {
     return {
       responsive: true,
       maintainAspectRatio: false,
-      cutout: '60%',
+      cutout: '68%',
+      radius: '80%',
       plugins: {
         legend: {
           position: 'bottom',
