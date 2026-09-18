@@ -49,3 +49,6 @@ Thumbs.db
 
 # Claude Code session-local state
 .claude/
+
+# Local devcontainer config (no versionado, paths específicos de esta máquina)
+/.devcontainer
