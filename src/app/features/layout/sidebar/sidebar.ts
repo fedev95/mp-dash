@@ -1,12 +1,13 @@
 import { Component, inject, signal } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
+import { DeleteAccountDialog } from '../../account/delete-account-dialog/delete-account-dialog';
 
 const STORAGE_KEY = 'sidebar-collapsed';
 
 @Component({
   selector: 'app-sidebar',
-  imports: [RouterLink, RouterLinkActive],
+  imports: [RouterLink, RouterLinkActive, DeleteAccountDialog],
   templateUrl: './sidebar.html',
 })
 export class Sidebar {
@@ -24,6 +25,7 @@ export class Sidebar {
   ];
 
   readonly collapsed = signal(localStorage.getItem(STORAGE_KEY) === '1');
+  readonly deleteAccountVisible = signal(false);
 
   toggle(): void {
     const next = !this.collapsed();
