@@ -52,3 +52,6 @@ Thumbs.db
 
 # Local devcontainer config (no versionado, paths específicos de esta máquina)
 /.devcontainer
+
+# Firebase emulator logs
+*-debug.log

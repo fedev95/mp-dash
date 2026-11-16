@@ -2,11 +2,22 @@ rules_version = '2';
 
 // Each user can only access their own data under /users/{uid}.
 // Everything else is denied by default.
+//
+// Who can use the app is set per project from the Firebase console
+// (clients can't read or write these documents):
+//   /config/access         { open: true }  -> anyone who signs in (demo)
+//   /allowedUsers/{uid}    any content     -> only listed users (personal)
+// If neither applies, or /config/access doesn't exist, access is denied.
 service cloud.firestore {
   match /databases/{database}/documents {
 
+    function hasAccess() {
+      return exists(/databases/$(database)/documents/allowedUsers/$(request.auth.uid))
+        || get(/databases/$(database)/documents/config/access).data.open == true;
+    }
+
     function isOwner(userId) {
-      return request.auth != null && request.auth.uid == userId;
+      return request.auth != null && request.auth.uid == userId && hasAccess();
     }
 
     function isShortString(value, maxSize) {

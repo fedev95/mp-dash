@@ -16,6 +16,17 @@ updates:
       - dependency-name: '*'
         update-types: ['version-update:semver-major']
 
+  - package-ecosystem: npm
+    directory: /tests/firestore-rules
+    schedule:
+      interval: weekly
+    groups:
+      firebase:
+        patterns: ['*']
+    ignore:
+      - dependency-name: '*'
+        update-types: ['version-update:semver-major']
+
   - package-ecosystem: github-actions
     directory: /
     schedule:
