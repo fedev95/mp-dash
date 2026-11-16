@@ -35,6 +35,12 @@ jobs:
           set +a
           sh ./scripts/generate-env.sh
 
+      - name: Check the CSP matches in nginx and Firebase Hosting
+        run: |
+          nginx_csp=$(grep -o "default-src[^\"]*" nginx/default.conf)
+          hosting_csp=$(grep -o "default-src[^\"]*" firebase.json)
+          [ "$nginx_csp" = "$hosting_csp" ] || { echo "CSP differs between nginx/default.conf and firebase.json"; exit 1; }
+
       - run: npm run format:check
       - run: npm run lint
       # No sandbox: recent Ubuntu runners restrict the user namespaces Chrome's sandbox needs.
