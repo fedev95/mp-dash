@@ -1,0 +1,77 @@
+rules_version = '2';
+
+// Each user can only access their own data under /users/{uid}.
+// Everything else is denied by default.
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isOwner(userId) {
+      return request.auth != null && request.auth.uid == userId;
+    }
+
+    function isShortString(value, maxSize) {
+      return value is string && value.size() > 0 && value.size() <= maxSize;
+    }
+
+    function isIsoDateOrNull(value) {
+      return value == null || (value is string && value.matches('^[0-9]{4}-[0-9]{2}-[0-9]{2}$'));
+    }
+
+    function isValidSummary(summary) {
+      return summary is map
+        && summary.keys().hasOnly(['initialBalance', 'credits', 'debits', 'finalBalance'])
+        && summary.initialBalance is number
+        && summary.credits is number
+        && summary.debits is number
+        && summary.finalBalance is number;
+    }
+
+    function isValidStatement(data) {
+      return data.keys().hasOnly(['fileName', 'uploadedAt', 'periodStart', 'periodEnd', 'summary', 'transactions'])
+        && data.keys().hasAll(['fileName', 'uploadedAt', 'periodStart', 'periodEnd', 'summary', 'transactions'])
+        && isShortString(data.fileName, 255)
+        && data.uploadedAt is string
+        && isIsoDateOrNull(data.periodStart)
+        && isIsoDateOrNull(data.periodEnd)
+        && isValidSummary(data.summary)
+        && data.transactions is list
+        && data.transactions.size() <= 5000;
+    }
+
+    function isValidCategory(data) {
+      return data.keys().hasOnly(['name', 'color'])
+        && data.keys().hasAll(['name', 'color'])
+        && isShortString(data.name, 50)
+        && data.color is string
+        && data.color.matches('^#[0-9a-fA-F]{6}$');
+    }
+
+    function isValidCategoryRule(data) {
+      return data.keys().hasOnly(['transactionType', 'categoryId'])
+        && data.keys().hasAll(['transactionType', 'categoryId'])
+        && isShortString(data.transactionType, 200)
+        && isShortString(data.categoryId, 128);
+    }
+
+    match /users/{userId}/statements/{statementId} {
+      allow read, delete: if isOwner(userId);
+      allow create: if isOwner(userId) && isValidStatement(request.resource.data);
+      // Only the transactions list changes after upload (categories and notes),
+      // and it keeps the same number of items.
+      allow update: if isOwner(userId)
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['transactions'])
+        && request.resource.data.transactions is list
+        && request.resource.data.transactions.size() == resource.data.transactions.size();
+    }
+
+    match /users/{userId}/categories/{categoryId} {
+      allow read, delete: if isOwner(userId);
+      allow create, update: if isOwner(userId) && isValidCategory(request.resource.data);
+    }
+
+    match /users/{userId}/categoryRules/{ruleId} {
+      allow read, delete: if isOwner(userId);
+      allow create, update: if isOwner(userId) && isValidCategoryRule(request.resource.data);
+    }
+  }
+}
