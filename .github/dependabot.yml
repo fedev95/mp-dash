@@ -15,6 +15,9 @@ updates:
       # Major upgrades (e.g. Angular 21) need a manual migration.
       - dependency-name: '*'
         update-types: ['version-update:semver-major']
+      # Angular pins zone.js to a 0.x minor; upgrade it together with Angular.
+      - dependency-name: zone.js
+        update-types: ['version-update:semver-minor']
 
   - package-ecosystem: npm
     directory: /tests/firestore-rules
@@ -36,3 +39,7 @@ updates:
     directory: /
     schedule:
       interval: weekly
+    ignore:
+      # Stay on a Node major supported by the Angular version in use.
+      - dependency-name: node
+        update-types: ['version-update:semver-major']
