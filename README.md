@@ -12,11 +12,13 @@ The UI is in Spanish (Argentina). This project is not affiliated with Mercado Pa
 - Per-statement analysis and transaction list, with notes on each movement.
 - Custom categories, plus rules that categorize new movements by transaction type.
 - Search movements across all statements.
-- Each user's data is isolated by Firestore security rules.
+- Delete your account and all its data.
+- Each user's data is isolated by Firestore security rules, and each Firebase project decides who can use the app.
+- Demo mode with warnings and sample statements, for the public deployment.
 
 ## Tech stack
 
-Angular 20, PrimeNG, Tailwind CSS 4, Chart.js, Firebase (Auth and Firestore), Docker and nginx.
+Angular 20, PrimeNG, Tailwind CSS 4, Chart.js, Firebase (Auth, Firestore, Hosting and App Check), Docker and nginx.
 
 ## Requirements
 
@@ -39,7 +41,19 @@ Angular 20, PrimeNG, Tailwind CSS 4, Chart.js, Firebase (Auth and Firestore), Do
    docker compose up
    ```
 
+5. Sign up, then decide who can use the app by creating one of these documents in Firestore from the console. Until then, every request is denied.
+   - `allowedUsers/{uid}` (any content): only the listed users. Your UID is in Authentication > Users.
+   - `config/access` with the boolean field `open: true`: anyone who signs in.
+
 The container generates `src/environments/environment.ts` from `.env` on startup. Both files are git-ignored.
+
+### Environment variables
+
+| Variable             | Description                                                      |
+| -------------------- | ---------------------------------------------------------------- |
+| `FIREBASE_*`         | Web app config from the Firebase console (required)              |
+| `DEMO_MODE`          | `true` shows the demo warnings and sample files. Default `false` |
+| `APP_CHECK_SITE_KEY` | Optional reCAPTCHA v3 site key to enable Firebase App Check      |
 
 ## Scripts
 
@@ -52,7 +66,29 @@ Run them inside the container, for example `docker compose exec web npm run lint
 | `npm run lint`   | ESLint                                              |
 | `npm run format` | Format with Prettier (`format:check` only verifies) |
 
-CI runs format check, lint, tests, build and a Docker build on every push and pull request.
+The Firestore rules have their own tests against the emulator (needs Node and Java):
+
+```bash
+cd tests/firestore-rules && npm ci && npm test
+```
+
+CI runs format check, lint, unit tests, rules tests, build and a Docker build on every push and pull request.
+
+## Deploying the demo
+
+The public demo runs on Firebase Hosting, in a separate Firebase project from personal use.
+
+1. Create `.env.demo` with the demo project's config, `DEMO_MODE=true` and, optionally, `APP_CHECK_SITE_KEY`.
+2. In the demo project's Firestore, create `config/access` with `open: true`.
+3. Build and deploy Hosting and the Firestore rules, all inside Docker:
+
+   ```bash
+   ./scripts/deploy-demo.sh
+   ```
+
+   The first run asks you to sign in to Firebase. The login is kept in the `mp-dash-firebase-cli` Docker volume.
+
+For App Check, register a reCAPTCHA v3 key for the Hosting domains in Firebase > App Check. Turn on enforcement once the metrics show only verified requests.
 
 ## Production image
 
@@ -68,10 +104,13 @@ docker build --target prod \
 docker run -p 8080:80 mp-dash
 ```
 
+`DEMO_MODE` and `APP_CHECK_SITE_KEY` can be passed as build args too.
+
 Notes:
 
-- The Firebase web config ends up in the bundle; that's expected. Restrict the API key by HTTP referrer in Google Cloud and consider enabling App Check.
-- If you use a custom `authDomain`, add it to `frame-src` in [`nginx/default.conf`](nginx/default.conf).
+- The Firebase web config ends up in the bundle; that's expected. Restrict the API key by HTTP referrer in Google Cloud.
+- The CSP is defined in both [`nginx/default.conf`](nginx/default.conf) and [`firebase.json`](firebase.json). CI checks that they match.
+- If you use a custom `authDomain`, add it to `frame-src` in both files.
 
 ## CSV format
 
