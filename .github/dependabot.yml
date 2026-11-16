@@ -1,0 +1,27 @@
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+    groups:
+      angular:
+        patterns: ['@angular/*', '@angular-devkit/*', 'angular-eslint']
+      firebase:
+        patterns: ['firebase', '@angular/fire']
+      primeng:
+        patterns: ['primeng', '@primeng/*', 'primeicons', 'tailwindcss-primeui']
+    ignore:
+      # Major upgrades (e.g. Angular 21) need a manual migration.
+      - dependency-name: '*'
+        update-types: ['version-update:semver-major']
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+
+  - package-ecosystem: docker
+    directory: /
+    schedule:
+      interval: weekly
