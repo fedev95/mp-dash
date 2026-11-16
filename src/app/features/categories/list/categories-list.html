@@ -99,7 +99,9 @@
                     ></span>
                   }
                   <p class="text-sm text-surface-900 dark:text-surface-0 truncate">
-                    <span class="font-medium">{{ rule.category?.name ?? 'Categoría eliminada' }}</span>
+                    <span class="font-medium">{{
+                      rule.category?.name ?? 'Categoría eliminada'
+                    }}</span>
                     <span class="text-surface-400 dark:text-surface-500"> — </span>
                     <span [attr.title]="rule.transactionType">{{ rule.transactionType }}</span>
                   </p>
@@ -144,7 +146,9 @@
     </span>
   </div>
 
-  <label for="category-name" class="block text-sm text-surface-600 dark:text-surface-300 mb-1">Nombre</label>
+  <label for="category-name" class="block text-sm text-surface-600 dark:text-surface-300 mb-1"
+    >Nombre</label
+  >
   <input
     id="category-name"
     pInputText
@@ -157,7 +161,11 @@
     [disabled]="saving()"
   />
 
-  <span id="category-color-label" class="block text-sm text-surface-600 dark:text-surface-300 mt-4 mb-2">Color</span>
+  <span
+    id="category-color-label"
+    class="block text-sm text-surface-600 dark:text-surface-300 mt-4 mb-2"
+    >Color</span
+  >
   <div class="flex flex-wrap gap-2" role="group" aria-labelledby="category-color-label">
     @for (swatch of palette; track swatch) {
       <button
@@ -216,7 +224,12 @@
         [disabled]="deleting()"
         (onClick)="deleteTarget.set(null)"
       />
-      <p-button label="Eliminar" severity="danger" [loading]="deleting()" (onClick)="confirmDelete()" />
+      <p-button
+        label="Eliminar"
+        severity="danger"
+        [loading]="deleting()"
+        (onClick)="confirmDelete()"
+      />
     </div>
   }
 </p-dialog>

@@ -1,5 +1,7 @@
 <div class="min-h-screen flex items-center justify-center bg-surface-50 dark:bg-surface-950 p-4">
-  <div class="w-full max-w-sm bg-white dark:bg-surface-900 rounded-xl shadow-md p-8 flex flex-col gap-4">
+  <div
+    class="w-full max-w-sm bg-white dark:bg-surface-900 rounded-xl shadow-md p-8 flex flex-col gap-4"
+  >
     <div class="text-center mb-2">
       <h1 class="text-2xl font-semibold text-surface-900 dark:text-surface-0">Crear cuenta</h1>
       <p class="text-surface-500 dark:text-surface-400 text-sm">
@@ -13,12 +15,23 @@
 
     <form [formGroup]="form" (ngSubmit)="submit()" class="flex flex-col gap-4">
       <div class="flex flex-col gap-1">
-        <label for="email" class="text-sm font-medium text-surface-700 dark:text-surface-200">Email</label>
-        <input pInputText id="email" type="email" formControlName="email" class="w-full" autocomplete="email" />
+        <label for="email" class="text-sm font-medium text-surface-700 dark:text-surface-200"
+          >Email</label
+        >
+        <input
+          pInputText
+          id="email"
+          type="email"
+          formControlName="email"
+          class="w-full"
+          autocomplete="email"
+        />
       </div>
 
       <div class="flex flex-col gap-1">
-        <label for="password" class="text-sm font-medium text-surface-700 dark:text-surface-200">Contraseña</label>
+        <label for="password" class="text-sm font-medium text-surface-700 dark:text-surface-200"
+          >Contraseña</label
+        >
         <p-password
           inputId="password"
           formControlName="password"
@@ -30,7 +43,13 @@
         />
       </div>
 
-      <p-button type="submit" label="Crear cuenta" [loading]="loading()" [disabled]="loading()" styleClass="w-full" />
+      <p-button
+        type="submit"
+        label="Crear cuenta"
+        [loading]="loading()"
+        [disabled]="loading()"
+        styleClass="w-full"
+      />
     </form>
 
     <div class="flex items-center gap-2 text-surface-400 dark:text-surface-500 text-xs">

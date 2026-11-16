@@ -39,12 +39,22 @@
           {{ s.summary.credits | arsCurrency }}
         </p>
         @if (creditsDelta(); as d) {
-          <p class="text-xs font-medium flex items-center gap-1 mt-1" [class]="d.favorable | favorableClass">
-            <i class="pi" [class.pi-arrow-up]="d.absolute >= 0" [class.pi-arrow-down]="d.absolute < 0"></i>
+          <p
+            class="text-xs font-medium flex items-center gap-1 mt-1"
+            [class]="d.favorable | favorableClass"
+          >
+            <i
+              class="pi"
+              [class.pi-arrow-up]="d.absolute >= 0"
+              [class.pi-arrow-down]="d.absolute < 0"
+            ></i>
             @if (d.pct !== null) {
               <span>{{ d.pct > 0 ? '+' : '' }}{{ d.pct }}% vs. {{ previousPeriodLabel() }}</span>
             } @else {
-              <span>{{ d.absolute > 0 ? '+' : '' }}{{ d.absolute | arsCurrency }} vs. {{ previousPeriodLabel() }}</span>
+              <span
+                >{{ d.absolute > 0 ? '+' : '' }}{{ d.absolute | arsCurrency }} vs.
+                {{ previousPeriodLabel() }}</span
+              >
             }
           </p>
         }
@@ -55,12 +65,22 @@
           {{ s.summary.debits | arsCurrency }}
         </p>
         @if (debitsDelta(); as d) {
-          <p class="text-xs font-medium flex items-center gap-1 mt-1" [class]="d.favorable | favorableClass">
-            <i class="pi" [class.pi-arrow-up]="d.absolute >= 0" [class.pi-arrow-down]="d.absolute < 0"></i>
+          <p
+            class="text-xs font-medium flex items-center gap-1 mt-1"
+            [class]="d.favorable | favorableClass"
+          >
+            <i
+              class="pi"
+              [class.pi-arrow-up]="d.absolute >= 0"
+              [class.pi-arrow-down]="d.absolute < 0"
+            ></i>
             @if (d.pct !== null) {
               <span>{{ d.pct > 0 ? '+' : '' }}{{ d.pct }}% vs. {{ previousPeriodLabel() }}</span>
             } @else {
-              <span>{{ d.absolute > 0 ? '+' : '' }}{{ d.absolute | arsCurrency }} vs. {{ previousPeriodLabel() }}</span>
+              <span
+                >{{ d.absolute > 0 ? '+' : '' }}{{ d.absolute | arsCurrency }} vs.
+                {{ previousPeriodLabel() }}</span
+              >
             }
           </p>
         }
@@ -71,12 +91,22 @@
           {{ s.summary.finalBalance | arsCurrency }}
         </p>
         @if (finalBalanceDelta(); as d) {
-          <p class="text-xs font-medium flex items-center gap-1 mt-1" [class]="d.favorable | favorableClass">
-            <i class="pi" [class.pi-arrow-up]="d.absolute >= 0" [class.pi-arrow-down]="d.absolute < 0"></i>
+          <p
+            class="text-xs font-medium flex items-center gap-1 mt-1"
+            [class]="d.favorable | favorableClass"
+          >
+            <i
+              class="pi"
+              [class.pi-arrow-up]="d.absolute >= 0"
+              [class.pi-arrow-down]="d.absolute < 0"
+            ></i>
             @if (d.pct !== null) {
               <span>{{ d.pct > 0 ? '+' : '' }}{{ d.pct }}% vs. {{ previousPeriodLabel() }}</span>
             } @else {
-              <span>{{ d.absolute > 0 ? '+' : '' }}{{ d.absolute | arsCurrency }} vs. {{ previousPeriodLabel() }}</span>
+              <span
+                >{{ d.absolute > 0 ? '+' : '' }}{{ d.absolute | arsCurrency }} vs.
+                {{ previousPeriodLabel() }}</span
+              >
             }
           </p>
         }
@@ -88,7 +118,12 @@
         Evolución del saldo
       </p>
       <div class="h-96">
-        <p-chart type="line" [data]="balanceChartData()" [options]="balanceChartOptions()" class="h-full" />
+        <p-chart
+          type="line"
+          [data]="balanceChartData()"
+          [options]="balanceChartOptions()"
+          class="h-full"
+        />
       </div>
     </p-card>
 

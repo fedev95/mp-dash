@@ -150,7 +150,10 @@ export class StatementsService {
   }
 
   /** Applies `categoryId` to every transaction (in any statement) matching `transactionType`. */
-  async applyCategoryToMatchingTransactions(transactionType: string, categoryId: string): Promise<number> {
+  async applyCategoryToMatchingTransactions(
+    transactionType: string,
+    categoryId: string,
+  ): Promise<number> {
     const user = this.auth.currentUser;
     if (!user) {
       throw new Error('No hay un usuario autenticado.');

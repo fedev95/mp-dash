@@ -24,8 +24,7 @@ export const routes: Routes = [
       },
       {
         path: 'documents',
-        loadComponent: () =>
-          import('./features/documents/upload/upload').then((m) => m.Upload),
+        loadComponent: () => import('./features/documents/upload/upload').then((m) => m.Upload),
       },
       {
         path: 'categories',
@@ -35,9 +34,7 @@ export const routes: Routes = [
       {
         path: 'movements',
         loadComponent: () =>
-          import('./features/movements/movements-list/movements-list').then(
-            (m) => m.MovementsList,
-          ),
+          import('./features/movements/movements-list/movements-list').then((m) => m.MovementsList),
       },
       {
         path: 'statements',
@@ -54,9 +51,7 @@ export const routes: Routes = [
       {
         path: 'statements/:id/transactions',
         loadComponent: () =>
-          import('./features/statements/detail/transactions-list').then(
-            (m) => m.TransactionsList,
-          ),
+          import('./features/statements/detail/transactions-list').then((m) => m.TransactionsList),
       },
       {
         path: 'statements/:id/transactions/:txId',

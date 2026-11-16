@@ -189,9 +189,7 @@ export class Dashboard implements OnInit {
   }
 
   private readonly sortedStatements = computed(() =>
-    [...this.statements()].sort((a, b) =>
-      (a.periodStart ?? '').localeCompare(b.periodStart ?? ''),
-    ),
+    [...this.statements()].sort((a, b) => (a.periodStart ?? '').localeCompare(b.periodStart ?? '')),
   );
 
   readonly balanceChartData = computed(() => {

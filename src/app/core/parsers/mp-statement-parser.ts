@@ -1,4 +1,8 @@
-import { AccountStatement, StatementSummary, StatementTransaction } from '../models/account-statement.model';
+import {
+  AccountStatement,
+  StatementSummary,
+  StatementTransaction,
+} from '../models/account-statement.model';
 
 const SUMMARY_HEADER = 'INITIAL_BALANCE;CREDITS;DEBITS;FINAL_BALANCE';
 const TRANSACTIONS_HEADER =

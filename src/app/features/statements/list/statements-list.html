@@ -58,7 +58,9 @@
           <td [class]="record.summary.credits | amountClass">
             {{ record.summary.credits | arsCurrency }}
           </td>
-          <td [class]="record.summary.debits | amountClass">{{ record.summary.debits | arsCurrency }}</td>
+          <td [class]="record.summary.debits | amountClass">
+            {{ record.summary.debits | arsCurrency }}
+          </td>
           <td [class]="record.summary.finalBalance | amountClass: false">
             {{ record.summary.finalBalance | arsCurrency }}
           </td>

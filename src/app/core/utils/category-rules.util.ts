@@ -6,7 +6,10 @@ export function normalizeTransactionType(value: string): string {
 }
 
 /** Finds the rule (if any) whose transaction type matches, after normalization. */
-export function findRuleFor(transactionType: string, rules: CategoryRule[]): CategoryRule | undefined {
+export function findRuleFor(
+  transactionType: string,
+  rules: CategoryRule[],
+): CategoryRule | undefined {
   const normalized = normalizeTransactionType(transactionType);
   return rules.find((rule) => normalizeTransactionType(rule.transactionType) === normalized);
 }

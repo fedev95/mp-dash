@@ -42,5 +42,7 @@ export function findPreviousStatement(
   if (earlier.length === 0) {
     return null;
   }
-  return earlier.reduce((latest, r) => ((r.periodStart ?? '') > (latest.periodStart ?? '') ? r : latest));
+  return earlier.reduce((latest, r) =>
+    (r.periodStart ?? '') > (latest.periodStart ?? '') ? r : latest,
+  );
 }

@@ -40,12 +40,14 @@
     }
   </nav>
 
-  <div class="flex flex-col gap-1 px-2 py-2 border-t border-surface-200 dark:border-surface-700 shrink-0">
+  <div
+    class="flex flex-col gap-1 px-2 py-2 border-t border-surface-200 dark:border-surface-700 shrink-0"
+  >
     @if (currentUser()?.email) {
       <div
         class="flex items-center px-3 py-2"
         [class.gap-3]="!collapsed()"
-        [title]="collapsed() ? currentUser()?.email ?? '' : ''"
+        [title]="collapsed() ? (currentUser()?.email ?? '') : ''"
       >
         <i class="pi pi-user w-5 shrink-0 text-center text-surface-400 dark:text-surface-500"></i>
         <span

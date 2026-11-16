@@ -48,12 +48,22 @@
           {{ yearCredits() | arsCurrency }}
         </p>
         @if (yearCreditsDelta(); as d) {
-          <p class="text-xs font-medium flex items-center gap-1 mt-1" [class]="d.favorable | favorableClass">
-            <i class="pi" [class.pi-arrow-up]="d.absolute >= 0" [class.pi-arrow-down]="d.absolute < 0"></i>
+          <p
+            class="text-xs font-medium flex items-center gap-1 mt-1"
+            [class]="d.favorable | favorableClass"
+          >
+            <i
+              class="pi"
+              [class.pi-arrow-up]="d.absolute >= 0"
+              [class.pi-arrow-down]="d.absolute < 0"
+            ></i>
             @if (d.pct !== null) {
               <span>{{ d.pct > 0 ? '+' : '' }}{{ d.pct }}% vs. {{ selectedYear() - 1 }}</span>
             } @else {
-              <span>{{ d.absolute > 0 ? '+' : '' }}{{ d.absolute | arsCurrency }} vs. {{ selectedYear() - 1 }}</span>
+              <span
+                >{{ d.absolute > 0 ? '+' : '' }}{{ d.absolute | arsCurrency }} vs.
+                {{ selectedYear() - 1 }}</span
+              >
             }
           </p>
         }
@@ -64,12 +74,22 @@
           {{ yearDebits() | arsCurrency }}
         </p>
         @if (yearDebitsDelta(); as d) {
-          <p class="text-xs font-medium flex items-center gap-1 mt-1" [class]="d.favorable | favorableClass">
-            <i class="pi" [class.pi-arrow-up]="d.absolute >= 0" [class.pi-arrow-down]="d.absolute < 0"></i>
+          <p
+            class="text-xs font-medium flex items-center gap-1 mt-1"
+            [class]="d.favorable | favorableClass"
+          >
+            <i
+              class="pi"
+              [class.pi-arrow-up]="d.absolute >= 0"
+              [class.pi-arrow-down]="d.absolute < 0"
+            ></i>
             @if (d.pct !== null) {
               <span>{{ d.pct > 0 ? '+' : '' }}{{ d.pct }}% vs. {{ selectedYear() - 1 }}</span>
             } @else {
-              <span>{{ d.absolute > 0 ? '+' : '' }}{{ d.absolute | arsCurrency }} vs. {{ selectedYear() - 1 }}</span>
+              <span
+                >{{ d.absolute > 0 ? '+' : '' }}{{ d.absolute | arsCurrency }} vs.
+                {{ selectedYear() - 1 }}</span
+              >
             }
           </p>
         }
@@ -109,7 +129,12 @@
         </p>
         @if (hasStatements) {
           <div class="h-96">
-            <p-chart type="line" [data]="balanceChartData()" [options]="balanceChartOptions()" class="h-full" />
+            <p-chart
+              type="line"
+              [data]="balanceChartData()"
+              [options]="balanceChartOptions()"
+              class="h-full"
+            />
           </div>
         } @else {
           <p class="text-surface-400 dark:text-surface-500 text-sm text-center py-10">
@@ -170,7 +195,9 @@
         </p>
         @if (hasCategoryTrend) {
           <div class="flex flex-col gap-1">
-            <label for="trend-category" class="text-xs text-surface-500 dark:text-surface-400">Categoría</label>
+            <label for="trend-category" class="text-xs text-surface-500 dark:text-surface-400"
+              >Categoría</label
+            >
             <p-select
               inputId="trend-category"
               [options]="yearCategoryOptions()"
@@ -223,7 +250,10 @@
                 </p>
               </div>
               <div class="flex items-center gap-2 shrink-0">
-                <span class="font-medium" [class]="record.summary.finalBalance | amountClass: false">
+                <span
+                  class="font-medium"
+                  [class]="record.summary.finalBalance | amountClass: false"
+                >
                   {{ record.summary.finalBalance | arsCurrency }}
                 </span>
                 <i class="pi pi-chevron-right text-surface-300 dark:text-surface-600"></i>

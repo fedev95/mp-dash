@@ -1,6 +1,14 @@
 import { Injectable, inject } from '@angular/core';
 import { Auth } from '@angular/fire/auth';
-import { Firestore, addDoc, collection, deleteDoc, doc, getDocs, updateDoc } from '@angular/fire/firestore/lite';
+import {
+  Firestore,
+  addDoc,
+  collection,
+  deleteDoc,
+  doc,
+  getDocs,
+  updateDoc,
+} from '@angular/fire/firestore/lite';
 import { CategoryRule } from '../models/category-rule.model';
 import { normalizeTransactionType } from '../utils/category-rules.util';
 

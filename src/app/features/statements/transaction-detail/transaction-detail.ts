@@ -119,7 +119,11 @@ export class TransactionDetail implements OnInit {
       const transactions = await this.statementsService.updateTransaction(
         this.statementId,
         this.transactionIndex,
-        { categoryId, note: this.noteValue().trim(), categorySource: categoryId ? 'manual' : undefined },
+        {
+          categoryId,
+          note: this.noteValue().trim(),
+          categorySource: categoryId ? 'manual' : undefined,
+        },
       );
       this.statement.update((current) => (current ? { ...current, transactions } : current));
       this.saved.set(true);

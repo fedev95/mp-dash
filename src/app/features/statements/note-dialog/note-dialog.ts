@@ -51,9 +51,13 @@ export class NoteDialog {
     this.saving.set(true);
     this.errorMessage.set(null);
     try {
-      const transactions = await this.statementsService.updateTransaction(this.statementId(), tx.id, {
-        note,
-      });
+      const transactions = await this.statementsService.updateTransaction(
+        this.statementId(),
+        tx.id,
+        {
+          note,
+        },
+      );
       this.updated.emit(transactions);
       this.visible.set(false);
     } catch (err) {

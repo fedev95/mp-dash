@@ -101,7 +101,9 @@ export class MovementsList implements OnInit {
     );
   });
 
-  readonly categoryOptions = computed(() => [...new Set(this.rows().map((r) => r.categoryLabel))].sort());
+  readonly categoryOptions = computed(() =>
+    [...new Set(this.rows().map((r) => r.categoryLabel))].sort(),
+  );
 
   readonly filteredRows = computed(() => {
     const categoryLabels = this.selectedCategoryLabels();

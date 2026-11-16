@@ -65,7 +65,10 @@ export class CategoriesService {
   }
 
   /** Updates the name and/or color of an existing category. */
-  async updateCategory(id: string, patch: Partial<Pick<Category, 'name' | 'color'>>): Promise<void> {
+  async updateCategory(
+    id: string,
+    patch: Partial<Pick<Category, 'name' | 'color'>>,
+  ): Promise<void> {
     const user = this.auth.currentUser;
     if (!user) {
       throw new Error('No hay un usuario autenticado.');

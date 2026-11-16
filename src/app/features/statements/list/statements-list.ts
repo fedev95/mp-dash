@@ -20,7 +20,14 @@ function periodYear(period: string | null): number | null {
 
 @Component({
   selector: 'app-statements-list',
-  imports: [TableModule, MessageModule, SelectModule, FormsModule, ArsCurrencyPipe, AmountClassPipe],
+  imports: [
+    TableModule,
+    MessageModule,
+    SelectModule,
+    FormsModule,
+    ArsCurrencyPipe,
+    AmountClassPipe,
+  ],
   templateUrl: './statements-list.html',
 })
 export class StatementsList implements OnInit {
@@ -48,7 +55,9 @@ export class StatementsList implements OnInit {
     if (year === null) {
       return this.statements();
     }
-    return this.statements().filter((record) => periodYear(record.periodStart ?? record.periodEnd) === year);
+    return this.statements().filter(
+      (record) => periodYear(record.periodStart ?? record.periodEnd) === year,
+    );
   });
 
   ngOnInit(): void {

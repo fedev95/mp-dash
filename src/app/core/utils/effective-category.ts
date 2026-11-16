@@ -15,5 +15,7 @@ export function effectiveCategory(
   }
   const autoName = categorizeTransaction(tx.transactionType);
   const autoMatch = categories.find((c) => c.name === autoName);
-  return autoMatch ? { name: autoMatch.name, color: autoMatch.color } : { name: autoName, color: null };
+  return autoMatch
+    ? { name: autoMatch.name, color: autoMatch.color }
+    : { name: autoName, color: null };
 }
