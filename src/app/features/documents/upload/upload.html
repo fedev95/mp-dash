@@ -25,6 +25,9 @@
         uploadLabel="Confirmar subida"
         invalidFileTypeMessageSummary="Archivo inválido"
         invalidFileTypeMessageDetail="Solo se admiten archivos .csv."
+        [maxFileSize]="maxFileSize"
+        invalidFileSizeMessageSummary="Archivo demasiado grande"
+        invalidFileSizeMessageDetail="El tamaño máximo es {0}."
         (onSelect)="onSelect()"
         (uploadHandler)="onConfirmUpload($event)"
       >

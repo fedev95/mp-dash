@@ -16,6 +16,7 @@
       rows="2"
       class="w-full resize-none max-h-40 overflow-y-auto"
       placeholder="Agregá una nota para este movimiento…"
+      maxlength="500"
       [ngModel]="noteValue()"
       (ngModelChange)="noteValue.set($event)"
       [disabled]="saving()"
