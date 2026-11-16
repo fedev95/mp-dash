@@ -6,6 +6,7 @@ import { InputTextModule } from 'primeng/inputtext';
 import { PasswordModule } from 'primeng/password';
 import { MessageModule } from 'primeng/message';
 import { AuthService } from '../../../core/services/auth.service';
+import { DEMO_MODE } from '../../../core/utils/demo';
 
 @Component({
   selector: 'app-login',
@@ -24,6 +25,7 @@ export class Login {
   private readonly auth = inject(AuthService);
   private readonly router = inject(Router);
 
+  readonly demoMode = DEMO_MODE;
   readonly loading = signal(false);
   readonly errorMessage = signal<string | null>(null);
 

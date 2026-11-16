@@ -9,6 +9,14 @@
       </p>
     </div>
 
+    @if (demoMode) {
+      <p-message
+        severity="warn"
+        text="Demo pública: no uses tu contraseña habitual ni subas datos reales."
+        styleClass="w-full"
+      />
+    }
+
     @if (errorMessage()) {
       <p-message severity="error" [text]="errorMessage()!" styleClass="w-full" />
     }

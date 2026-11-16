@@ -8,6 +8,7 @@ import { parseMpStatement } from '../../../core/parsers/mp-statement-parser';
 import { StatementsService } from '../../../core/services/statements.service';
 import { StatementRecord } from '../../../core/models/account-statement.model';
 import { formatPeriod } from '../../../core/utils/format-period';
+import { DEMO_MODE, SAMPLE_STATEMENTS } from '../../../core/utils/demo';
 
 /** A statement is stored as a single Firestore document, which is capped at 1 MiB. */
 const MAX_FILE_SIZE_BYTES = 500 * 1024;
@@ -35,6 +36,8 @@ export class Upload {
 
   @ViewChild(FileUpload) fileUpload?: FileUpload;
 
+  readonly demoMode = DEMO_MODE;
+  readonly sampleStatements = SAMPLE_STATEMENTS;
   readonly maxFileSize = MAX_FILE_SIZE_BYTES;
   readonly uploading = signal(false);
   readonly results = signal<UploadResult[]>([]);
