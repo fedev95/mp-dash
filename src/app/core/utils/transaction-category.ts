@@ -1,4 +1,4 @@
-const CATEGORY_PREFIXES: Array<{ prefix: string; category: string }> = [
+const CATEGORY_PREFIXES: { prefix: string; category: string }[] = [
   { prefix: 'transferencia enviada', category: 'Transferencias enviadas' },
   { prefix: 'transferencia recibida', category: 'Transferencias recibidas' },
   { prefix: 'rendimiento', category: 'Rendimientos' },

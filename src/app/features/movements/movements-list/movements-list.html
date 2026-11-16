@@ -14,8 +14,9 @@
     <p-card>
       <div class="flex flex-wrap items-end gap-3">
         <div class="flex flex-col gap-1">
-          <label class="text-xs text-surface-500 dark:text-surface-400">Categoría</label>
+          <label for="filter-category" class="text-xs text-surface-500 dark:text-surface-400">Categoría</label>
           <p-multiSelect
+            inputId="filter-category"
             [options]="categoryOptions()"
             [ngModel]="selectedCategoryLabels()"
             (ngModelChange)="selectedCategoryLabels.set($event)"
@@ -27,8 +28,9 @@
         </div>
 
         <div class="flex flex-col gap-1">
-          <label class="text-xs text-surface-500 dark:text-surface-400">Buscar</label>
+          <label for="filter-search" class="text-xs text-surface-500 dark:text-surface-400">Buscar</label>
           <input
+            id="filter-search"
             pInputText
             pSize="small"
             type="text"
@@ -40,8 +42,9 @@
         </div>
 
         <div class="flex flex-col gap-1">
-          <label class="text-xs text-surface-500 dark:text-surface-400">Rango de fechas</label>
+          <label for="filter-dates" class="text-xs text-surface-500 dark:text-surface-400">Rango de fechas</label>
           <p-datepicker
+            inputId="filter-dates"
             [ngModel]="dateRange()"
             (ngModelChange)="dateRange.set($event)"
             selectionMode="range"
@@ -56,8 +59,9 @@
         </div>
 
         <div class="flex flex-col gap-1 shrink-0 ml-2">
-          <label class="text-xs text-surface-500 dark:text-surface-400">Signo</label>
+          <label for="filter-sign" class="text-xs text-surface-500 dark:text-surface-400">Signo</label>
           <p-select
+            inputId="filter-sign"
             [options]="signOptions"
             optionLabel="label"
             optionValue="value"
@@ -69,7 +73,7 @@
         </div>
 
         <div class="flex flex-col gap-1 shrink-0">
-          <label class="text-xs invisible">&nbsp;</label>
+          <span class="text-xs invisible" aria-hidden="true">&nbsp;</span>
           <p-button
             label="Limpiar filtros"
             severity="secondary"

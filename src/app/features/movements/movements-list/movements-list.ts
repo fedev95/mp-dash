@@ -77,7 +77,7 @@ export class MovementsList implements OnInit {
   readonly dateRange = signal<Date[] | null>(null);
   readonly sign = signal<Sign>('all');
 
-  readonly signOptions: Array<{ label: string; value: Sign }> = [
+  readonly signOptions: { label: string; value: Sign }[] = [
     { label: 'Todos', value: 'all' },
     { label: 'Créditos', value: 'credit' },
     { label: 'Débitos', value: 'debit' },

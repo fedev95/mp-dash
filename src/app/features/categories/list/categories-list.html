@@ -144,8 +144,9 @@
     </span>
   </div>
 
-  <label class="block text-sm text-surface-600 dark:text-surface-300 mb-1">Nombre</label>
+  <label for="category-name" class="block text-sm text-surface-600 dark:text-surface-300 mb-1">Nombre</label>
   <input
+    id="category-name"
     pInputText
     type="text"
     autocomplete="off"
@@ -156,8 +157,8 @@
     [disabled]="saving()"
   />
 
-  <label class="block text-sm text-surface-600 dark:text-surface-300 mt-4 mb-2">Color</label>
-  <div class="flex flex-wrap gap-2">
+  <span id="category-color-label" class="block text-sm text-surface-600 dark:text-surface-300 mt-4 mb-2">Color</span>
+  <div class="flex flex-wrap gap-2" role="group" aria-labelledby="category-color-label">
     @for (swatch of palette; track swatch) {
       <button
         type="button"
