@@ -41,6 +41,8 @@ __screenshots__/
 
 # Environment secrets (generated at container startup by docker-entrypoint.sh)
 .env
+.env.*
+!.env.example
 src/environments/environment.ts
 
 # System files

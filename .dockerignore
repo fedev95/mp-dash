@@ -5,6 +5,8 @@ dist
 coverage
 *.log
 .env
+.env.*
+!.env.example
 src/environments/environment.ts
 .devcontainer
 .claude
