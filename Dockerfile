@@ -27,6 +27,8 @@ RUN sh ./scripts/generate-env.sh && npm run build
 
 ##### Stage: prod — nginx serving the static production bundle #####
 FROM nginx:alpine AS prod
+COPY nginx/default.conf /etc/nginx/conf.d/default.conf
 COPY --from=build /app/dist/mp-dash/browser /usr/share/nginx/html
+COPY --from=build /app/dist/mp-dash/3rdpartylicenses.txt /usr/share/nginx/html/
 EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]
