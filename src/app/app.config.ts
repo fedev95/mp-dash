@@ -7,7 +7,11 @@ import { provideRouter } from '@angular/router';
 import { provideHttpClient } from '@angular/common/http';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { getApp, initializeApp, provideFirebaseApp } from '@angular/fire/app';
-import { initializeAppCheck, provideAppCheck, ReCaptchaV3Provider } from '@angular/fire/app-check';
+import {
+  initializeAppCheck,
+  provideAppCheck,
+  ReCaptchaEnterpriseProvider,
+} from '@angular/fire/app-check';
 import { getAuth, provideAuth } from '@angular/fire/auth';
 import { getFirestore, provideFirestore } from '@angular/fire/firestore/lite';
 import { providePrimeNG } from 'primeng/config';
@@ -42,7 +46,7 @@ export const appConfig: ApplicationConfig = {
       ? [
           provideAppCheck(() =>
             initializeAppCheck(getApp(), {
-              provider: new ReCaptchaV3Provider(environment.appCheckSiteKey),
+              provider: new ReCaptchaEnterpriseProvider(environment.appCheckSiteKey),
               isTokenAutoRefreshEnabled: true,
             }),
           ),

@@ -53,7 +53,7 @@ The container generates `src/environments/environment.ts` from `.env` on startup
 | -------------------- | ---------------------------------------------------------------- |
 | `FIREBASE_*`         | Web app config from the Firebase console (required)              |
 | `DEMO_MODE`          | `true` shows the demo warnings and sample files. Default `false` |
-| `APP_CHECK_SITE_KEY` | Optional reCAPTCHA v3 site key to enable Firebase App Check      |
+| `APP_CHECK_SITE_KEY` | Optional reCAPTCHA site key to enable Firebase App Check         |
 
 ## Scripts
 
@@ -88,7 +88,7 @@ The public demo runs on Firebase Hosting, in a separate Firebase project from pe
 
    The first run asks you to sign in to Firebase. The login is kept in the `mp-dash-firebase-cli` Docker volume.
 
-For App Check, register a reCAPTCHA v3 key for the Hosting domains in Firebase > App Check. Turn on enforcement once the metrics show only verified requests.
+For App Check, create a score-based reCAPTCHA key (Google Cloud Fraud Defense, formerly reCAPTCHA Enterprise) for the Hosting domains, add its site key in Firebase > App Check and in `.env.demo`, and redeploy. Turn on enforcement once the metrics show only verified requests.
 
 ## Production image
 
