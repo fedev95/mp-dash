@@ -138,7 +138,7 @@ RELEASE_DATE;TRANSACTION_TYPE;REFERENCE_ID;TRANSACTION_NET_AMOUNT;PARTIAL_BALANC
 - Only the Mercado Pago account statement CSV is supported.
 - Up to 3000 movements and 500 KB per statement, since each statement is stored as a single Firestore document (1 MiB max).
 - Amounts are shown in ARS.
-- Some dependency advisories remain until the move to Angular 21. See [SECURITY.md](SECURITY.md).
+- Some dependency advisories remain until the move to Angular 21. They're in Firebase's server-side gRPC code and in Angular's build tooling, so they aren't part of the browser bundle.
 
 ## License
 
