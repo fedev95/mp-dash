@@ -18,6 +18,6 @@ sh ./scripts/generate-env.sh
 npm run build
 cp dist/mp-dash/3rdpartylicenses.txt dist/mp-dash/browser/
 
-firebase="npx --yes firebase-tools@14.27.0"
+firebase="npx --yes firebase-tools@15.36.0"
 $firebase login --no-localhost
 $firebase deploy --only hosting,firestore:rules --project "$FIREBASE_PROJECT_ID"

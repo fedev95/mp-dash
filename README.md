@@ -74,7 +74,7 @@ Run them inside the container, for example `docker compose exec web npm run lint
 | `npm run lint`   | ESLint                                              |
 | `npm run format` | Format with Prettier (`format:check` only verifies) |
 
-The Firestore rules have their own tests against the emulator (needs Node and Java):
+The Firestore rules have their own tests against the emulator (needs Node and Java 21):
 
 ```bash
 cd tests/firestore-rules && npm ci && npm test
