@@ -4,6 +4,14 @@ Personal finance dashboard for Mercado Pago account statements. Upload the month
 
 The UI is in Spanish (Argentina). This project is not affiliated with Mercado Pago.
 
+**Live demo:** https://mp-dash-90ac2.web.app. Sign up and try it with the sample statements on the upload page. Don't upload real data.
+
+![Dashboard](docs/dashboard.png)
+
+| Movements                               | Movement detail                              |
+| --------------------------------------- | -------------------------------------------- |
+| ![Movements search](docs/movements.png) | ![Movement detail](docs/movement-detail.png) |
+
 ## Features
 
 - Sign in with email/password or Google (Firebase Auth).

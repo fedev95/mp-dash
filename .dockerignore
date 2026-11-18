@@ -10,3 +10,4 @@ coverage
 src/environments/environment.ts
 .devcontainer
 .claude
+docs
