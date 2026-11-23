@@ -16,8 +16,8 @@ The UI is in Spanish (Argentina). This project is not affiliated with Mercado Pa
 
 - Sign in with email/password or Google (Firebase Auth).
 - Upload monthly statement CSVs. Uploading a month that already exists asks before replacing it.
-- Dashboard with the latest balance, credits and debits compared to the previous month, and charts by category and month.
-- Per-statement analysis and transaction list, with notes on each movement.
+- Dashboard with the latest balance, the selected year's credits and debits compared to the previous year, and charts by category and month.
+- Per-statement analysis (credits, debits and final balance compared with the previous uploaded statement) and transaction list, with notes on each movement.
 - Custom categories, plus rules that categorize new movements by transaction type.
 - Search movements across all statements.
 - Delete your account and all its data.
